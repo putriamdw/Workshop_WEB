@@ -25,6 +25,22 @@
         </a>
     </li>
 
+    {{-- Menu Sertifikat --}}
+<li class="nav-item {{ request()->routeIs('pdf.sertifikat') ? 'active' : '' }}">
+    <a class="nav-link" href="{{ route('pdf.sertifikat') }}">
+        <span class="menu-title">Sertifikat</span>
+        <i class="mdi mdi-file-pdf-box menu-icon"></i>
+    </a>
+</li>
+
+{{-- Menu Undangan --}}
+<li class="nav-item {{ request()->routeIs('pdf.undangan') ? 'active' : '' }}">
+    <a class="nav-link" href="{{ route('pdf.undangan') }}">
+        <span class="menu-title">Undangan</span>
+        <i class="mdi mdi-email menu-icon"></i>
+    </a>
+</li>
+
     {{-- Hanya admin --}}
     @if(auth()->user()->role == 'admin')
 

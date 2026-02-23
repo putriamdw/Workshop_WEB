@@ -19,7 +19,7 @@
     </div>
     <ul class="navbar-nav navbar-nav-right">
       <li class="nav-item nav-profile dropdown">
-        <a class="nav-link dropdown-toggle" id="profileDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+        <a class="nav-link dropdown-toggle" id="profileDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
           <div class="nav-profile-img">
             <img src="{{ asset('assets/images/faces/face1.jpg') }}" alt="image">
             <span class="availability-status online"></span>
@@ -35,12 +35,13 @@
     </a>
     <div class="dropdown-divider"></div>
     
-    <a class="dropdown-item" href="{{ route('logout') }}" 
-       onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+    <form action="{{ route('logout') }}" method="POST">
+    @csrf
+    <button type="submit" class="dropdown-item">
         <i class="mdi mdi-logout me-2 text-primary"></i> Signout
-    </a>
+    </button>
+</form>
 
-    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
         @csrf
     </form>
 </div>
@@ -52,7 +53,7 @@
         </a>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link count-indicator dropdown-toggle" id="messageDropdown" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+        <a class="nav-link count-indicator dropdown-toggle" id="messageDropdown" href="#" data-toggle="dropdown" aria-expanded="false">
           <i class="mdi mdi-email-outline"></i>
           <span class="count-symbol bg-warning"></span>
         </a>
@@ -93,7 +94,7 @@
         </div>
       </li>
       <li class="nav-item dropdown">
-        <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-bs-toggle="dropdown">
+        <a class="nav-link count-indicator dropdown-toggle" id="notificationDropdown" href="#" data-toggle="dropdown">
           <i class="mdi mdi-bell-outline"></i>
           <span class="count-symbol bg-danger"></span>
         </a>
@@ -155,3 +156,4 @@
     </button>
   </div>
 </nav>
+

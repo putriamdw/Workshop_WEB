@@ -27,6 +27,11 @@ class AuthenticatedSessionController extends Controller
         $request->authenticate();
 
         $request->session()->regenerate();
+        session()->forget('otp_email');
+
+        if (Auth::user()->otp) {
+        Auth::user()->update(['otp' => null]);
+        }
 
         return redirect()->intended('/dashboard');
     }

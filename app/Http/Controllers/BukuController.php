@@ -47,7 +47,7 @@ class BukuController extends Controller
         return view('buku.edit', compact('buku', 'kategori'));
     }
 
-    // UPDATE (Simpan perubahan)
+    // UPDATE (Simpan perubahan buku)
     public function update(Request $request, $idbuku)
     {
         $request->validate([

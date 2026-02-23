@@ -49,4 +49,19 @@
             </x-primary-button>
         </div>
     </form>
+
+    <hr>
+
+<div style="text-align:center; margin-top:15px;">
+    <a href="{{ url('/auth/google/redirect') }}"
+       style="display:inline-block;
+              padding:10px 15px;
+              background:#DB4437;
+              color:white;
+              text-decoration:none;
+              border-radius:5px;">
+        Daftar dengan Google
+    </a>
+</div>
+
 </x-guest-layout>

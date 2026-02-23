@@ -33,14 +33,14 @@ class KategoriController extends Controller
                          ->with('success', 'Kategori berhasil ditambahkan!');
     }
 
-    // EDIT (Form edit)
+    // EDIT (Form edit kategori)
     public function edit($idkategori)
     {
         $kategori = Kategori::findOrFail($idkategori);
         return view('kategori.edit', compact('kategori'));
     }
 
-    // UPDATE (Simpan perubahan)
+    // UPDATE (Simpan perubahan kategori)
     public function update(Request $request, $idkategori)
     {
         $request->validate([
@@ -54,7 +54,7 @@ class KategoriController extends Controller
                          ->with('success', 'Kategori berhasil diupdate!');
     }
 
-    // DELETE (Hapus)
+    // DELETE (Hapus kategori)
     public function destroy($idkategori)
     {
         $kategori = Kategori::findOrFail($idkategori);

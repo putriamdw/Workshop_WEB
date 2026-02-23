@@ -10,21 +10,20 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    if (!Schema::hasColumn('users', 'role')) {
+    {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('role')->default('user');
+            $table->string('id_google', 256)->nullable();
+            $table->string('otp', 6)->nullable();
         });
     }
-}
 
-public function down(): void
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
 {
-    if (Schema::hasColumn('users', 'role')) {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('role');
-        });
-    }
+    Schema::table('users', function (Blueprint $table) {
+        $table->dropColumn(['id_google', 'otp']);
+    });
 }
-
 };

@@ -2,22 +2,22 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Closure; // meneruskan request ke proses berikutnya
+use Illuminate\Http\Request; // menangani data request
+use Illuminate\Support\Facades\Auth; // cek user yang sedang login
 
-class RoleMiddleware
+class RoleMiddleware    
 {
     public function handle(Request $request, Closure $next, $role)
     {
-        if (!Auth::check()) {
+        if (!Auth::check()) { // cek apakah ada user yang sedang login
             return redirect('/login');
         }
 
-        if (Auth::user()->role !== $role) {
+        if (Auth::user()->role !== $role) { // ambil data user yang login
             abort(403, 'Akses ditolak!');
         }
 
-        return $next($request);
+        return $next($request); // diteruskan ke controller
     }
 }

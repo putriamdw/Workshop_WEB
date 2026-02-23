@@ -1,22 +1,31 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\KategoriController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BukuController;
+use App\Http\Controllers\GeneratePdfController;
+use App\Http\Controllers\KategoriController;
+use App\Http\Middleware\RoleMiddleware;
 use App\Models\Buku;
 use App\Models\Kategori;
-use App\Http\Middleware\RoleMiddleware;
+use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes - Modul 1
-|--------------------------------------------------------------------------
-*/
-
-// Arahkan halaman awal ke login
 Route::get('/', function () {
     return redirect('/login');
 });
+
+// Google OAuth
+Route::get('/auth/google/redirect', [AuthController::class, 'redirectToGoogle'])
+    ->name('google.redirect');
+
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])
+    ->name('google.callback');
+
+// OTP (TANPA auth, TANPA guest)
+Route::get('/verify-otp', [AuthController::class, 'showOtpForm'])
+    ->name('otp.form');
+
+Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])
+    ->name('otp.verify');
 
 // Semua user login bisa akses dashboard
 Route::middleware(['auth'])->group(function () {
@@ -47,6 +56,17 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('buku/{id}/edit', [BukuController::class, 'edit'])->name('buku.edit');
     Route::put('buku/{id}', [BukuController::class, 'update'])->name('buku.update');
     Route::delete('buku/{id}', [BukuController::class, 'destroy'])->name('buku.destroy');
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/generate-sertifikat', 
+        [GeneratePdfController::class, 'sertifikat']
+    )->name('pdf.sertifikat');
+
+    Route::get('/generate-undangan', 
+        [GeneratePdfController::class, 'undangan']
+    )->name('pdf.undangan');
+
 });
 
 require __DIR__.'/auth.php';
