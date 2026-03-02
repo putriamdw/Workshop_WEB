@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+    <!-- DataTables CSS -->
+    <link rel="stylesheet"
+            href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
     {{-- Header --}}
     <meta charset="UTF-8">
     @include('layouts.header')
@@ -30,9 +35,13 @@
             </div>
 
             {{-- Footer --}}
-            @include('layouts.footer')
+@include('layouts.footer')
 
-            @include('layouts.script')
+@include('layouts.script')
+
+@yield('script-page')
+
+</div>
 
         </div>
     </div>

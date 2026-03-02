@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BarangController;
 use App\Http\Controllers\BukuController;
 use App\Http\Controllers\GeneratePdfController;
 use App\Http\Controllers\KategoriController;
@@ -15,10 +16,10 @@ Route::get('/', function () {
 
 // Google OAuth
 Route::get('/auth/google/redirect', [AuthController::class, 'redirectToGoogle'])
-    ->name('google.redirect');
+    ->name('google.redirect'); // diarahkan ke halaman login milik google
 
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])
-    ->name('google.callback');
+    ->name('google.callback'); // diarahkan ke method ini untuk proses selanjutnya (cek user, buat user baru jika belum ada, kirim OTP, dll)
 
 // OTP (TANPA auth, TANPA guest)
 Route::get('/verify-otp', [AuthController::class, 'showOtpForm'])
@@ -66,6 +67,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/generate-undangan', 
         [GeneratePdfController::class, 'undangan']
     )->name('pdf.undangan');
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/barang/cetak', [BarangController::class,'cetak'])->name('barang.cetak');
+    Route::resource('barang', BarangController::class);
+});
 
 });
 

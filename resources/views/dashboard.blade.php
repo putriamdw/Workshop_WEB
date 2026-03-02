@@ -4,6 +4,7 @@
 
 @section('content')
 
+
 <h3 class="page-title mb-3">Dashboard</h3>
 
 <h4>
@@ -71,3 +72,4 @@
 @endif
 
 @endsection
+

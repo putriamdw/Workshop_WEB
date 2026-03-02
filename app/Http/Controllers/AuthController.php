@@ -11,16 +11,16 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-public function redirectToGoogle()
+public function redirectToGoogle() // mengarahkan ke Google untuk login (belum ada login, session)
 {
     return Socialite::driver('google')->redirect();
 }
 
 public function handleGoogleCallback()
 {
-    $googleUser = Socialite::driver('google')->user();
+    $googleUser = Socialite::driver('google')->user(); // mengambil data user dari Google
 
-    $user = User::updateOrCreate(
+    $user = User::updateOrCreate( // email ada (update data), email belum ada (buat user baru)
         ['email' => $googleUser->email],
         [
             'name' => $googleUser->name,
@@ -33,16 +33,25 @@ public function handleGoogleCallback()
     $otp = rand(100000, 999999);
     $user->update(['otp' => $otp]);
 
-    session([
+    session([ // simpan session/email sementara karena user belum resmi logim
     'otp_email' => $user->email,
     'login_via_google' => true
 ]);
 
-    Mail::raw("Kode OTP Anda: $otp", function ($message) use ($user) {
+    Mail::raw("Kode OTP Anda: $otp", function ($message) use ($user) { // sistem kirim otp ke email
         $message->to($user->email)
                 ->subject('Kode OTP Login');
     });
-    return redirect()->route('otp.form');
+    return redirect()->route('otp.form'); // diarahkan ke halaman input otp
+}
+
+public function showOtpForm()
+{
+    if (!session('login_via_google')) { // jika tidak login via google, tidak otp (langsung ke login biasa)
+        return redirect('/login');
+    }
+
+    return view('auth.otp');
 }
 
 public function verifyOtp(Request $request)
@@ -52,22 +61,22 @@ public function verifyOtp(Request $request)
         'otp' => 'required|digits:6'
     ]);
 
-    $email = session('otp_email');
+    $email = session('otp_email'); // ambil email dari session
 
     if (!$email) {
-        return redirect('/login');
+        return redirect('/login'); // klo gaada, redirect ke login (otp tidak bisa diverifikasi tanpa login google dulu)
     }
 
-    $user = User::where('email', $email)->first();
+    $user = User::where('email', $email)->first(); // ambil data user
 
     if (!$user || !$user->otp) {
         return redirect('/login')
                ->with('error', 'OTP sudah tidak valid, silakan login ulang.');
     }
 
-    if (trim($user->otp) === trim($request->otp)) {
+    if (trim($user->otp) === trim($request->otp)) { // mencocokkan otp
 
-    // REGENERATE DULU
+    // REGENERATE DULU (jjika otp cocok)
     $request->session()->regenerate();
 
     // BARU LOGIN
@@ -75,21 +84,12 @@ public function verifyOtp(Request $request)
 
     $user->update(['otp' => null]);
 
-    session()->forget(['otp_email', 'login_via_google']);
+    session()->forget(['otp_email', 'login_via_google']); // hapus session sementara
 
     return redirect()->route('dashboard');
 }
 
-    return back()->with('error', 'OTP salah');
-}
-
-public function showOtpForm()
-{
-    if (!session('login_via_google')) {
-        return redirect('/login');
-    }
-
-    return view('auth.otp');
+    return back()->with('error', 'OTP salah'); // jika otp salah, tetap di form otp dengan pesan error
 }
 
 }

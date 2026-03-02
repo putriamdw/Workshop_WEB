@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Barryvdh\DomPDF\Facade\Pdf;
+use Barryvdh\DomPDF\Facade\Pdf; // dompdf untuk ubah html ke pdf
 use Illuminate\Support\Facades\Auth;
 
 class GeneratePdfController extends Controller
 {
     public function sertifikat()
     {
-        $data = [
+        $data = [ // ambil data
             'nama' => Auth::user()->name,
             'tanggal' => date('d M Y')
         ];
@@ -23,7 +23,7 @@ class GeneratePdfController extends Controller
     public function undangan()
     {
         $data = [
-            'judul' => 'Undangan Kegiatan Literasi',
+            'judul' => 'Undangan Kegiatan Literasi 2',
             'tanggal' => date('d M Y')
         ];
 

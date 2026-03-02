@@ -9,18 +9,18 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up(): void // dijalankan saat migrate
 {
-    if (!Schema::hasColumn('users', 'role')) {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('role')->default('user');
+    if (!Schema::hasColumn('users', 'role')) { // cek jika kolom role belum ada di tabel users, baru ditambahkan
+        Schema::table('users', function (Blueprint $table) { 
+            $table->string('role')->default('user'); // menambahkan kolom role dengan default user
         });
     }
 }
 
-public function down(): void
+public function down(): void // dijalankan saat rollback
 {
-    if (Schema::hasColumn('users', 'role')) {
+    if (Schema::hasColumn('users', 'role')) { // cek jika kolom role ada di tabel users, baru dihapus
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('role');
         });

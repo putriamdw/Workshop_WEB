@@ -6,10 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up(): void // menambahkan kolom
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('id_google', 256)->nullable();
@@ -17,13 +14,10 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-{
-    Schema::table('users', function (Blueprint $table) {
-        $table->dropColumn(['id_google', 'otp']);
-    });
-}
+    public function down(): void // menghapus kolom jika rollback
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn(['id_google', 'otp']);
+        });
+    }
 };

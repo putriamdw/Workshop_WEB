@@ -25,6 +25,13 @@
         </a>
     </li>
 
+    <li class="nav-item {{ request()->routeIs('barang.*') ? 'active' : '' }}">
+    <a class="nav-link" href="{{ route('barang.index') }}">
+        <span class="menu-title">Barang</span>
+        <i class="mdi mdi-tag menu-icon"></i>
+    </a>
+</li>
+
     {{-- Menu Sertifikat --}}
 <li class="nav-item {{ request()->routeIs('pdf.sertifikat') ? 'active' : '' }}">
     <a class="nav-link" href="{{ route('pdf.sertifikat') }}">
