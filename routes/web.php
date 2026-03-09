@@ -73,6 +73,12 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('barang', BarangController::class);
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/js-tugas/spinner',    function () { return view('tugas_js.js1_spinner'); })->name('jstugas.tugas1');
+    Route::get('/js-tugas/tabel-crud', function () { return view('tugas_js.js2_3_tabel_crud'); })->name('jstugas.tugas2_3');
+    Route::get('/js-tugas/select',     function () { return view('tugas_js.js4_select'); })->name('jstugas.tugas4');
+});
+
 });
 
 require __DIR__.'/auth.php';

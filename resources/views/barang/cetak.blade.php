@@ -4,14 +4,13 @@
     <title>Cetak Label Barang TnJ 108</title>
     <style>
         @page { 
-            margin: 0; 
+            margin: 0; /* hilangkan margin bawaan pdf */
         }
         body {
             margin: 0;
             width: 210mm;
             height: 167mm;
             font-family: Arial, sans-serif;
-            background-color: #eef4ab;
         }
 
         table {
@@ -42,7 +41,7 @@
             text-transform: uppercase;
             line-height: 1.1;
             margin-bottom: 2px;
-            max-height: 8mm
+            max-height: 8mm;
             word-wrap: break-word; 
         }
 
@@ -68,12 +67,12 @@
         @endphp
 
         {{-- Loop 8 Baris --}}
-        @for ($row = 0; $row < 8; $row++)
+        @for ($row = 0; $row < 8; $row++) 
             <tr>
                 {{-- Loop 5 kolom --}}
                 @for ($col = 0; $col < 5; $col++)
                     @php 
-                        $currentCell = ($row * 5) + $col; 
+                        $currentCell = ($row * 5) + $col;
                     @endphp
 
                     @if ($currentCell >= $startIndex && $itemIndex < count($barang))

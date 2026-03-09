@@ -48,6 +48,38 @@
     </a>
 </li>
 
+{{-- JS Tugas (Dropdown) --}}
+<li class="nav-item {{ request()->routeIs('jstugas.*') ? 'active' : '' }}">
+    <a class="nav-link" data-bs-toggle="collapse" href="#jsTugasMenu" 
+       aria-expanded="{{ request()->routeIs('jstugas.*') ? 'true' : 'false' }}">
+        <span class="menu-title">JS & jQuery</span>
+        <i class="menu-arrow"></i>
+        <i class="mdi mdi-language-javascript menu-icon"></i>
+    </a>
+    <div class="collapse {{ request()->routeIs('jstugas.*') ? 'show' : '' }}" id="jsTugasMenu">
+        <ul class="nav flex-column sub-menu">
+            <li class="nav-item {{ request()->routeIs('jstugas.tugas1') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('jstugas.tugas1') }}">
+                    <span class="menu-title">JS 1 - Spinner</span>
+                    <i class="mdi mdi-loading menu-icon"></i>
+                </a>
+            </li>
+            <li class="nav-item {{ request()->routeIs('jstugas.tugas2_3') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('jstugas.tugas2_3') }}">
+                    <span class="menu-title">JS 2 & 3 - Tabel & CRUD</span>
+                    <i class="mdi mdi-table-edit menu-icon"></i>
+                </a>
+            </li>
+            <li class="nav-item {{ request()->routeIs('jstugas.tugas4') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('jstugas.tugas4') }}">
+                    <span class="menu-title">JS 4 - Select</span>
+                    <i class="mdi mdi-form-select menu-icon"></i>
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
+
     {{-- Hanya admin --}}
     @if(auth()->user()->role == 'admin')
 
