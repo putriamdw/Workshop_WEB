@@ -129,22 +129,19 @@
 </style>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    // ── State ─────────────────────────────────────────────────
-let barangAktif = null;
-let keranjang   = [];
-const csrf      = $('meta[name="csrf-token"]').attr('content');
-    // ── Format Rupiah ─────────────────────────────────────────
+    let barangAktif = null;
+    let keranjang   = [];
+    const csrf      = $('meta[name="csrf-token"]').attr('content');
+
     function rupiah(n) {
         return 'Rp ' + parseInt(n).toLocaleString('id-ID');
     }
 
-    // ── Cek tombol Tambahkan ──────────────────────────────────
     function cekTombolTambah() {
         const jml = parseInt(document.getElementById('inp-jumlah').value);
         document.getElementById('btn-tambah').disabled = !(barangAktif && jml > 0);
     }
 
-    // ── Tampil alert ──────────────────────────────────────────
     function tampilAlert(tipe, html) {
         const el = document.getElementById('alert-cari');
         el.className = 'mt-3 alert alert-' + tipe;
@@ -192,7 +189,6 @@ const csrf      = $('meta[name="csrf-token"]').attr('content');
         });
     }
 
-    // ── Tambah ke Keranjang ───────────────────────────────────
     function tambahKeKeranjang() {
         if (!barangAktif) return;
         const jumlah = parseInt(document.getElementById('inp-jumlah').value);
@@ -215,7 +211,6 @@ const csrf      = $('meta[name="csrf-token"]').attr('content');
         resetFormInput();
     }
 
-    // ── Render Tabel ──────────────────────────────────────────
     function renderKeranjang() {
         const tbody = document.getElementById('tbody-keranjang');
         tbody.innerHTML = '';
@@ -255,7 +250,6 @@ const csrf      = $('meta[name="csrf-token"]').attr('content');
         document.getElementById('btn-bayar').disabled = false;
     }
 
-    // ── Modal Edit ────────────────────────────────────────────
     function bukaModalEdit(idx) {
         document.getElementById('modal-idx').value = idx;
         document.getElementById('modal-nama-barang').textContent =
@@ -282,13 +276,11 @@ const csrf      = $('meta[name="csrf-token"]').attr('content');
         renderKeranjang();
     }
 
-    // ── Hapus Baris ───────────────────────────────────────────
     function hapusBaris(idx) {
         keranjang.splice(idx, 1);
         renderKeranjang();
     }
 
-    // ── Bayar — jQuery AJAX ───────────────────────────────────
     function bayar() {
         if (keranjang.length === 0) return;
         const total    = keranjang.reduce((s, i) => s + i.subtotal, 0);
@@ -336,7 +328,6 @@ const csrf      = $('meta[name="csrf-token"]').attr('content');
         });
     }
 
-    // ── Reset Form Input ──────────────────────────────────────
     function resetFormInput() {
         barangAktif = null;
         document.getElementById('inp-kode').value   = '';
@@ -348,7 +339,6 @@ const csrf      = $('meta[name="csrf-token"]').attr('content');
         document.getElementById('inp-kode').focus();
     }
 
-    // ── Reset Semua ───────────────────────────────────────────
     function resetSemua() {
         keranjang = [];
         renderKeranjang();

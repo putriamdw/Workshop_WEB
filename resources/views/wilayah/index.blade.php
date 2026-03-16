@@ -14,7 +14,6 @@
             </div>
             <div class="card-body">
 
-                <!-- Provinsi -->
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Provinsi</label>
                     <select class="form-select" id="sel-provinsi">
@@ -22,7 +21,6 @@
                     </select>
                 </div>
 
-                <!-- Kota -->
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Kota / Kabupaten</label>
                     <select class="form-select" id="sel-kota" disabled>
@@ -30,7 +28,6 @@
                     </select>
                 </div>
 
-                <!-- Kecamatan -->
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Kecamatan</label>
                     <select class="form-select" id="sel-kecamatan" disabled>
@@ -38,7 +35,6 @@
                     </select>
                 </div>
 
-                <!-- Kelurahan -->
                 <div class="mb-3">
                     <label class="form-label fw-semibold">Kelurahan / Desa</label>
                     <select class="form-select" id="sel-kelurahan" disabled>
