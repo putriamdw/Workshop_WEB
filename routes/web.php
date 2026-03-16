@@ -9,6 +9,8 @@ use App\Http\Middleware\RoleMiddleware;
 use App\Models\Buku;
 use App\Models\Kategori;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\WilayahController;
+use App\Http\Controllers\PosController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -78,6 +80,28 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/js-tugas/tabel-crud', function () { return view('tugas_js.js2_3_tabel_crud'); })->name('jstugas.tugas2_3');
     Route::get('/js-tugas/select',     function () { return view('tugas_js.js4_select'); })->name('jstugas.tugas4');
 });
+
+Route::get('/wilayah', [WilayahController::class, 'index'])
+     ->name('wilayah.index');
+Route::get('/wilayah/provinsi', [WilayahController::class, 'getProvinsi'])
+     ->name('wilayah.provinsi');
+Route::get('/wilayah/kota/{id_provinsi}', [WilayahController::class, 'getKota'])
+     ->name('wilayah.kota');
+Route::get('/wilayah/kecamatan/{id_kota}', [WilayahController::class, 'getKecamatan'])
+     ->name('wilayah.kecamatan');
+Route::get('/wilayah/kelurahan/{id_kecamatan}', [WilayahController::class, 'getKelurahan'])
+     ->name('wilayah.kelurahan');
+Route::get('/wilayah-axios', [WilayahController::class, 'indexAxios'])
+     ->name('wilayah.axios');
+
+Route::get('/pos', [PosController::class, 'index'])
+     ->name('pos.index');
+Route::post('/pos/cari-barang', [PosController::class, 'cariBarang'])
+     ->name('pos.cari');
+Route::post('/pos/bayar', [PosController::class, 'bayar'])
+     ->name('pos.bayar');
+Route::get('/pos-axios', [PosController::class, 'indexAxios'])
+     ->name('pos.axios');
 
 });
 

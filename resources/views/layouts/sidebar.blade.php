@@ -80,6 +80,49 @@
     </div>
 </li>
 
+{{-- AJAX & Axios (Dropdown) --}}
+<li class="nav-item {{ request()->routeIs('wilayah.*') || request()->routeIs('pos.*') ? 'active' : '' }}">
+    <a class="nav-link" data-bs-toggle="collapse" href="#ajaxMenu"
+       aria-expanded="{{ request()->routeIs('wilayah.*') || request()->routeIs('pos.*') ? 'true' : 'false' }}">
+        <span class="menu-title">AJAX & Axios</span>
+        <i class="menu-arrow"></i>
+        <i class="mdi mdi-web menu-icon"></i>
+    </a>
+    <div class="collapse {{ request()->routeIs('wilayah.*') || request()->routeIs('pos.*') ? 'show' : '' }}" id="ajaxMenu">
+        <ul class="nav flex-column sub-menu">
+
+            {{-- Case 1: Wilayah --}}
+            <li class="nav-item {{ request()->routeIs('wilayah.index') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('wilayah.index') }}">
+                    <span class="menu-title">Wilayah — jQuery</span>
+                    <i class="mdi mdi-map-marker menu-icon"></i>
+                </a>
+            </li>
+            <li class="nav-item {{ request()->routeIs('wilayah.axios') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('wilayah.axios') }}">
+                    <span class="menu-title">Wilayah — Axios</span>
+                    <i class="mdi mdi-map-marker-outline menu-icon"></i>
+                </a>
+            </li>
+
+            {{-- Case 2: POS --}}
+            <li class="nav-item {{ request()->routeIs('pos.index') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('pos.index') }}">
+                    <span class="menu-title">POS — jQuery</span>
+                    <i class="mdi mdi-cart menu-icon"></i>
+                </a>
+            </li>
+            <li class="nav-item {{ request()->routeIs('pos.axios') ? 'active' : '' }}">
+                <a class="nav-link" href="{{ route('pos.axios') }}">
+                    <span class="menu-title">POS — Axios</span>
+                    <i class="mdi mdi-cart-outline menu-icon"></i>
+                </a>
+            </li>
+
+        </ul>
+    </div>
+</li>
+
     {{-- Hanya admin --}}
     @if(auth()->user()->role == 'admin')
 
