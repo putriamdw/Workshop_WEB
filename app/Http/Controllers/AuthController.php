@@ -18,7 +18,7 @@ public function redirectToGoogle() // mengarahkan ke Google untuk login (belum a
 
 public function handleGoogleCallback()
 {
-    $googleUser = Socialite::driver('google')->user(); // mengambil data user dari Google
+     $googleUser = Socialite::driver('google')->stateless()->user();
 
     $user = User::updateOrCreate( // email ada (update data), email belum ada (buat user baru)
         ['email' => $googleUser->email],
@@ -56,40 +56,37 @@ public function showOtpForm()
 
 public function verifyOtp(Request $request)
 {
-
     $request->validate([
         'otp' => 'required|digits:6'
     ]);
 
-    $email = session('otp_email'); // ambil email dari session
+    $email = session('otp_email');
 
     if (!$email) {
-        return redirect('/login'); // klo gaada, redirect ke login (otp tidak bisa diverifikasi tanpa login google dulu)
+        return redirect('/login');
     }
 
-    $user = User::where('email', $email)->first(); // ambil data user
+    $user = User::where('email', $email)->first();
 
     if (!$user || !$user->otp) {
         return redirect('/login')
                ->with('error', 'OTP sudah tidak valid, silakan login ulang.');
     }
 
-    if (trim($user->otp) === trim($request->otp)) { // mencocokkan otp
+    if (trim($user->otp) === trim($request->otp)) {
+        $request->session()->regenerate();
+        Auth::login($user);
+        $user->update(['otp' => null]);
+        session()->forget(['otp_email', 'login_via_google']);
 
-    // REGENERATE DULU (jjika otp cocok)
-    $request->session()->regenerate();
+        // ✅ Redirect berdasarkan role
+        return match($user->role) {
+            'admin'  => redirect()->route('admin.dashboard'),
+            'vendor' => redirect()->route('vendor.dashboard'),
+            default  => redirect()->route('dashboard'),
+        };
+    }
 
-    // BARU LOGIN
-    Auth::login($user);
-
-    $user->update(['otp' => null]);
-
-    session()->forget(['otp_email', 'login_via_google']); // hapus session sementara
-
-    return redirect()->route('dashboard');
+    return back()->with('error', 'OTP salah');
 }
-
-    return back()->with('error', 'OTP salah'); // jika otp salah, tetap di form otp dengan pesan error
-}
-
 }

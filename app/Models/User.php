@@ -48,4 +48,35 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isVendor(): bool
+    {
+        return $this->role === 'vendor';
+    }
+
+    public function isCustomer(): bool
+    {
+        return $this->role === 'customer';
+    }
+
+    // Role 'user' lama diperlakukan sama seperti customer
+    public function isUser(): bool
+    {
+        return $this->role === 'user';
+    }
+
+    public function vendor()
+    {
+        return $this->hasOne(\App\Models\Vendor::class, 'id_user', 'id');
+    }
+
+    public function pesanan()
+    {
+        return $this->hasMany(\App\Models\Pesanan::class, 'id_user', 'id');
+    }
 }

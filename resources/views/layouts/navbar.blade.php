@@ -25,25 +25,28 @@
             <span class="availability-status online"></span>
           </div>
           <div class="nav-profile-text">
-            <p class="mb-1 text-black">{{ Auth::user()->name }}</p>
+            <p class="mb-1 text-black">{{ Auth::check() ? Auth::user()->name : 'Guest' }}</p>
           </div>
         </a>
     
         <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">
-          <a class="dropdown-item" href="#">
-              <i class="mdi mdi-cached me-2 text-success"></i> Activity Log
-          </a>
-          <div class="dropdown-divider"></div>
-          
-          <form action="{{ route('logout') }}" method="POST">
-          @csrf
-            <button type="submit" class="dropdown-item">
-                <i class="mdi mdi-logout me-2 text-primary"></i> Signout
-            </button>
-          </form>
-        </div>
-
-      
+    @auth
+    <a class="dropdown-item" href="#">
+        <i class="mdi mdi-cached me-2 text-success"></i> Activity Log
+    </a>
+    <div class="dropdown-divider"></div>
+    <form action="{{ route('logout') }}" method="POST">
+    @csrf
+        <button type="submit" class="dropdown-item">
+            <i class="mdi mdi-logout me-2 text-primary"></i> Signout
+        </button>
+    </form>
+    @else
+    <a class="dropdown-item" href="{{ route('login') }}">
+        <i class="mdi mdi-login me-2 text-primary"></i> Login
+    </a>
+    @endauth
+</div>
 
       </li>
       <li class="nav-item d-none d-lg-block full-screen-link">

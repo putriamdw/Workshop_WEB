@@ -1,23 +1,29 @@
 <?php
-
 namespace App\Http\Middleware;
 
-use Closure; // meneruskan request ke proses berikutnya
-use Illuminate\Http\Request; // menangani data request
-use Illuminate\Support\Facades\Auth; // cek user yang sedang login
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-class RoleMiddleware    
+class RoleMiddleware
 {
-    public function handle(Request $request, Closure $next, $role)
+    /**
+     * Penggunaan: middleware('role:admin')
+     *             middleware('role:admin,vendor')
+     */
+    public function handle(Request $request, Closure $next, string ...$roles): Response
     {
-        if (!Auth::check()) { // cek apakah ada user yang sedang login
-            return redirect('/login');
+        if (!auth()->check()) {
+            return redirect()->route('login')
+                ->with('error', 'Silakan login terlebih dahulu.');
         }
 
-        if (Auth::user()->role !== $role) { // ambil data user yang login
-            abort(403, 'Akses ditolak!');
+        $userRole = auth()->user()->role;
+
+        if (!in_array($userRole, $roles)) {
+            abort(403, 'Anda tidak punya akses ke halaman ini.');
         }
 
-        return $next($request); // diteruskan ke controller
+        return $next($request);
     }
 }
