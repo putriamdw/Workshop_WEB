@@ -1,6 +1,4 @@
 <?php
-// app/Http/Controllers/PesananController.php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -214,7 +212,7 @@ class PesananController extends Controller
         ]);
     }
 
-    // Cek status (polling dari JS)
+    // Cek status
     public function cekStatus(string $idPesanan)
     {
         $pesanan = Pesanan::find($idPesanan);

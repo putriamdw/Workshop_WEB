@@ -18,17 +18,17 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
-// ── Google OAuth ──────────────────────────────────────────────────────────────
+// Google OAuth
 Route::get('/auth/google/redirect', [AuthController::class, 'redirectToGoogle'])
     ->name('google.redirect');
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])
     ->name('google.callback');
 
-// ── OTP (tanpa auth) ──────────────────────────────────────────────────────────
+// OTP (tanpa auth)
 Route::get('/verify-otp',  [AuthController::class, 'showOtpForm'])->name('otp.form');
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])  ->name('otp.verify');
 
-// ── Route yang butuh login ────────────────────────────────────────────────────
+// Route yang butuh login
 // SESUDAH
 Route::get('/dashboard', function () {
     $user = auth()->user();
@@ -79,7 +79,7 @@ Route::get('/dashboard', function () {
     Route::post('/pos/bayar',       [PosController::class, 'bayar'])    ->name('pos.bayar');
     Route::get('/pos-axios',        [PosController::class, 'indexAxios'])->name('pos.axios');
 
-// ── Hanya admin: CRUD kategori & buku ────────────────────────────────────────
+// Hanya admin: CRUD kategori & buku
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('kategori/create',      [KategoriController::class, 'create']) ->name('kategori.create');
     Route::post('kategori',            [KategoriController::class, 'store'])  ->name('kategori.store');
@@ -94,7 +94,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('buku/{id}',         [BukuController::class, 'destroy'])->name('buku.destroy');
 });
 
-// ── Customer (tidak perlu login) ──────────────────────────────────────────────
+// Customer (tidak perlu login)
 Route::prefix('pesan')->name('customer.')->group(function () {
     Route::get('/',                [PesananController::class, 'index'])      ->name('home');
     Route::get('/kantin/{vendor}', [PesananController::class, 'pilihVendor'])->name('pilih-vendor');
@@ -104,11 +104,11 @@ Route::prefix('pesan')->name('customer.')->group(function () {
     Route::get('/status/{id}',     [PesananController::class, 'cekStatus'])  ->name('cek-status');
 });
 
-// ── Webhook Midtrans (tanpa auth, tanpa CSRF) ─────────────────────────────────
+// Webhook Midtrans (tanpa auth, tanpa CSRF)
 Route::post('/webhook/midtrans', [PesananController::class, 'webhook'])
     ->name('webhook.midtrans');
 
-// ── Vendor ────────────────────────────────────────────────────────────────────
+// Vendor
 Route::middleware(['auth', 'role:vendor'])->prefix('vendor')->name('vendor.')->group(function () {
     Route::get('/setup',  [VendorController::class, 'setupForm']) ->name('setup');
     Route::post('/setup', [VendorController::class, 'setupStore'])->name('setup.store');
@@ -132,7 +132,7 @@ Route::middleware(['auth', 'role:vendor'])->prefix('vendor')->name('vendor.')->g
     });
 });
 
-// ── Admin ─────────────────────────────────────────────────────────────────────
+// Admin
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 

@@ -23,9 +23,7 @@
 
     @auth
 
-    {{-- ═══════════════════════════════════════ --}}
     {{-- ADMIN --}}
-    {{-- ═══════════════════════════════════════ --}}
     @if(Auth::user()->role == 'admin')
 
         <li class="nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
@@ -143,9 +141,7 @@
             </div>
         </li>
 
-    {{-- ═══════════════════════════════════════ --}}
     {{-- VENDOR --}}
-    {{-- ═══════════════════════════════════════ --}}
     @elseif(Auth::user()->role == 'vendor')
 
         <li class="nav-item {{ request()->routeIs('vendor.dashboard') ? 'active' : '' }}">
@@ -169,9 +165,7 @@
             </a>
         </li>
 
-    {{-- ═══════════════════════════════════════ --}}
     {{-- USER BIASA --}}
-    {{-- ═══════════════════════════════════════ --}}
     @else
 
         <li class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">

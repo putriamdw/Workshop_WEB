@@ -1,6 +1,4 @@
 <?php
-// app/Http/Middleware/EnsureVendorHasProfile.php
-
 namespace App\Http\Middleware;
 
 use Closure;

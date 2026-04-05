@@ -1,6 +1,4 @@
 <?php
-// app/Http/Controllers/VendorController.php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -11,7 +9,6 @@ use Illuminate\Support\Facades\Storage;
 
 class VendorController extends Controller
 {
-    // Dashboard vendor
     public function dashboard()
     {
         $vendor          = auth()->user()->vendor;
@@ -63,8 +60,7 @@ class VendorController extends Controller
             ->with('success', 'Profil kantin berhasil dibuat!');
     }
 
-    // ── CRUD Menu ──────────────────────────────────────────────────────────────
-
+    // CRUD Menu 
     public function menuIndex()
     {
         $vendor = auth()->user()->vendor;
@@ -153,8 +149,7 @@ class VendorController extends Controller
             ->with('success', 'Menu berhasil dihapus!');
     }
 
-    // ── Pesanan Lunas ──────────────────────────────────────────────────────────
-
+    // Pesanan Lunas 
     public function pesananIndex()
     {
         $vendor  = auth()->user()->vendor;

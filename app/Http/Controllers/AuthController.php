@@ -79,7 +79,7 @@ public function verifyOtp(Request $request)
         $user->update(['otp' => null]);
         session()->forget(['otp_email', 'login_via_google']);
 
-        // ✅ Redirect berdasarkan role
+        // Redirect berdasarkan role
         return match($user->role) {
             'admin'  => redirect()->route('admin.dashboard'),
             'vendor' => redirect()->route('vendor.dashboard'),
