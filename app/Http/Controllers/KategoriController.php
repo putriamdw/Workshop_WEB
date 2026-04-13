@@ -7,20 +7,20 @@ use App\Models\Kategori;
 
 class KategoriController extends Controller
 {
-    // READ (Tampilkan semua kategori)
+    // Read, tampilkan semua kategori
     public function index()
     {
         $kategoris = Kategori::all();
         return view('kategori.index', compact('kategoris'));
     }
 
-    // CREATE (Form tambah kategori)
+    // Form tambah kategori
     public function create()
     {
         return view('kategori.create');
     }
 
-    // STORE (Simpan kategori baru)
+    // Simpan kategori baru
     public function store(Request $request)
     {
         $request->validate([
@@ -33,14 +33,14 @@ class KategoriController extends Controller
                          ->with('success', 'Kategori berhasil ditambahkan!');
     }
 
-    // EDIT (Form edit kategori)
+    // Form edit kategori
     public function edit($idkategori)
     {
         $kategori = Kategori::findOrFail($idkategori);
         return view('kategori.edit', compact('kategori'));
     }
 
-    // UPDATE (Simpan perubahan kategori)
+    // Simpan perubahan kategori
     public function update(Request $request, $idkategori)
     {
         $request->validate([
@@ -54,7 +54,7 @@ class KategoriController extends Controller
                          ->with('success', 'Kategori berhasil diupdate!');
     }
 
-    // DELETE (Hapus kategori)
+    // Hapus kategori
     public function destroy($idkategori)
     {
         $kategori = Kategori::findOrFail($idkategori);

@@ -15,8 +15,8 @@ return new class extends Migration
             $table->unsignedInteger('id_vendor');
             $table->decimal('total', 12, 2);
             $table->string('status_bayar', 20)->default('belum_bayar');
-            // status_bayar: belum_bayar | lunas | expired
-            $table->string('metode_bayar', 20)->nullable(); // virtual_account | qris
+            // status_bayar: belum_bayar, lunas, expired
+            $table->string('metode_bayar', 20)->nullable(); // virtual_account, qris
             $table->string('bank', 20)->nullable();
             $table->string('va_number', 50)->nullable();
             $table->text('qr_string')->nullable();

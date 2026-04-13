@@ -8,21 +8,22 @@ use Illuminate\Http\Request;
 
 class BukuController extends Controller
 {
-    // READ (Tampilkan semua buku)
+
+    // Read (Tampilkan semua buku)
     public function index()
     {
         $bukus = Buku::with('kategori')->get();
         return view('buku.index', compact('bukus'));
     }
 
-    // CREATE (Form tambah buku)
+    // Form tambah buku
     public function create()
     {
         $kategori = Kategori::all();
         return view('buku.create', compact('kategori'));
     }
 
-    // STORE (Simpan buku baru)
+    // Simpan buku baru
     public function store(Request $request)
     {
         $request->validate([
@@ -38,7 +39,7 @@ class BukuController extends Controller
                          ->with('success', 'Buku berhasil ditambahkan');
     }
 
-    // EDIT (Form edit buku)
+    // Form edit buku
     public function edit($idbuku)
     {
         $buku = Buku::findOrFail($idbuku);
@@ -47,7 +48,7 @@ class BukuController extends Controller
         return view('buku.edit', compact('buku', 'kategori'));
     }
 
-    // UPDATE (Simpan perubahan buku)
+    // Simpan perubahan buku
     public function update(Request $request, $idbuku)
     {
         $request->validate([
@@ -64,7 +65,7 @@ class BukuController extends Controller
                          ->with('success', 'Buku berhasil diupdate');
     }
 
-    // DELETE (Hapus buku)
+    // Hapus buku
     public function destroy($idbuku)
     {
         $buku = Buku::findOrFail($idbuku);

@@ -10,6 +10,7 @@ use App\Http\Controllers\PosController;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CustomerController;
 use App\Models\Buku;
 use App\Models\Kategori;
 use Illuminate\Support\Facades\Route;
@@ -29,24 +30,23 @@ Route::get('/verify-otp',  [AuthController::class, 'showOtpForm'])->name('otp.fo
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])  ->name('otp.verify');
 
 // Route yang butuh login
-// SESUDAH
-Route::get('/dashboard', function () {
-    $user = auth()->user();
+Route::middleware(['auth'])->group(function () {
 
-    if ($user->role === 'admin') {
-        return redirect()->route('admin.dashboard');
-    }
+    Route::get('/dashboard', function () {
+        $user = auth()->user();
 
-    if ($user->role === 'vendor') {
-        return redirect()->route('vendor.dashboard');
-    }
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+        if ($user->role === 'vendor') {
+            return redirect()->route('vendor.dashboard');
+        }
 
-    // role 'user' / 'customer' → dashboard lama
-    return view('dashboard', [
-        'totalBuku'     => Buku::count(),
-        'totalKategori' => Kategori::count(),
-    ]);
-})->name('dashboard');
+        return view('dashboard', [
+            'totalBuku'     => Buku::count(),
+            'totalKategori' => Kategori::count(),
+        ]);
+    })->name('dashboard');
 
     // Semua user bisa lihat
     Route::get('kategori', [KategoriController::class, 'index'])->name('kategori.index');
@@ -57,44 +57,55 @@ Route::get('/dashboard', function () {
     Route::get('/generate-undangan',   [GeneratePdfController::class, 'undangan'])  ->name('pdf.undangan');
 
     // Barang
-    Route::post('/barang/cetak', [BarangController::class, 'cetak'])->name('barang.cetak');
+    Route::post('/barang/cetak', [GeneratePdfController::class, 'tagHarga'])->name('barang.cetak');
     Route::resource('barang', BarangController::class);
 
     // JS Tugas
-    Route::get('/js-tugas/spinner',    fn() => view('tugas_js.js1_spinner'))    ->name('jstugas.tugas1');
+    Route::get('/js-tugas/spinner',    fn() => view('tugas_js.js1_spinner'))     ->name('jstugas.tugas1');
     Route::get('/js-tugas/tabel-crud', fn() => view('tugas_js.js2_3_tabel_crud'))->name('jstugas.tugas2_3');
-    Route::get('/js-tugas/select',     fn() => view('tugas_js.js4_select'))     ->name('jstugas.tugas4');
+    Route::get('/js-tugas/select',     fn() => view('tugas_js.js4_select'))      ->name('jstugas.tugas4');
 
     // Wilayah
-    Route::get('/wilayah',                                  [WilayahController::class, 'index'])        ->name('wilayah.index');
-    Route::get('/wilayah/provinsi',                         [WilayahController::class, 'getProvinsi'])  ->name('wilayah.provinsi');
-    Route::get('/wilayah/kota/{id_provinsi}',               [WilayahController::class, 'getKota'])      ->name('wilayah.kota');
-    Route::get('/wilayah/kecamatan/{id_kota}',              [WilayahController::class, 'getKecamatan']) ->name('wilayah.kecamatan');
-    Route::get('/wilayah/kelurahan/{id_kecamatan}',         [WilayahController::class, 'getKelurahan']) ->name('wilayah.kelurahan');
-    Route::get('/wilayah-axios',                            [WilayahController::class, 'indexAxios'])   ->name('wilayah.axios');
+    Route::get('/wilayah',                          [WilayahController::class, 'index'])       ->name('wilayah.index');
+    Route::get('/wilayah/provinsi',                 [WilayahController::class, 'getProvinsi']) ->name('wilayah.provinsi');
+    Route::get('/wilayah/kota/{id_provinsi}',       [WilayahController::class, 'getKota'])     ->name('wilayah.kota');
+    Route::get('/wilayah/kecamatan/{id_kota}',      [WilayahController::class, 'getKecamatan'])->name('wilayah.kecamatan');
+    Route::get('/wilayah/kelurahan/{id_kecamatan}', [WilayahController::class, 'getKelurahan'])->name('wilayah.kelurahan');
+    Route::get('/wilayah-axios',                    [WilayahController::class, 'indexAxios'])  ->name('wilayah.axios');
 
     // POS
-    Route::get('/pos',              [PosController::class, 'index'])    ->name('pos.index');
+    Route::get('/pos',              [PosController::class, 'index'])     ->name('pos.index');
     Route::post('/pos/cari-barang', [PosController::class, 'cariBarang'])->name('pos.cari');
-    Route::post('/pos/bayar',       [PosController::class, 'bayar'])    ->name('pos.bayar');
+    Route::post('/pos/bayar',       [PosController::class, 'bayar'])     ->name('pos.bayar');
     Route::get('/pos-axios',        [PosController::class, 'indexAxios'])->name('pos.axios');
-
-// Hanya admin: CRUD kategori & buku
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('kategori/create',      [KategoriController::class, 'create']) ->name('kategori.create');
-    Route::post('kategori',            [KategoriController::class, 'store'])  ->name('kategori.store');
-    Route::get('kategori/{id}/edit',   [KategoriController::class, 'edit'])   ->name('kategori.edit');
-    Route::put('kategori/{id}',        [KategoriController::class, 'update']) ->name('kategori.update');
-    Route::delete('kategori/{id}',     [KategoriController::class, 'destroy'])->name('kategori.destroy');
-
-    Route::get('buku/create',          [BukuController::class, 'create'])->name('buku.create');
-    Route::post('buku',                [BukuController::class, 'store']) ->name('buku.store');
-    Route::get('buku/{id}/edit',       [BukuController::class, 'edit'])  ->name('buku.edit');
-    Route::put('buku/{id}',            [BukuController::class, 'update'])->name('buku.update');
-    Route::delete('buku/{id}',         [BukuController::class, 'destroy'])->name('buku.destroy');
 });
 
-// Customer (tidak perlu login)
+// Hanya admin: CRUD kategori, buku, customer data
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('kategori/create',    [KategoriController::class, 'create']) ->name('kategori.create');
+    Route::post('kategori',          [KategoriController::class, 'store'])  ->name('kategori.store');
+    Route::get('kategori/{id}/edit', [KategoriController::class, 'edit'])   ->name('kategori.edit');
+    Route::put('kategori/{id}',      [KategoriController::class, 'update']) ->name('kategori.update');
+    Route::delete('kategori/{id}',   [KategoriController::class, 'destroy'])->name('kategori.destroy');
+
+    Route::get('buku/create',        [BukuController::class, 'create'])->name('buku.create');
+    Route::post('buku',              [BukuController::class, 'store']) ->name('buku.store');
+    Route::get('buku/{id}/edit',     [BukuController::class, 'edit'])  ->name('buku.edit');
+    Route::put('buku/{id}',          [BukuController::class, 'update'])->name('buku.update');
+    Route::delete('buku/{id}',       [BukuController::class, 'destroy'])->name('buku.destroy');
+
+    // Customer Data (SC3) - hanya admin
+    Route::prefix('customer-data')->name('customer-data.')->group(function () {
+        Route::get('/',          [CustomerController::class, 'index'])     ->name('index');
+        Route::get('/tambah1',   [CustomerController::class, 'createBlob'])->name('tambah1');
+        Route::post('/tambah1',  [CustomerController::class, 'storeBlob']) ->name('store-blob');
+        Route::get('/tambah2',   [CustomerController::class, 'createFile'])->name('tambah2');
+        Route::post('/tambah2',  [CustomerController::class, 'storeFile']) ->name('store-file');
+        Route::get('/foto/{id}', [CustomerController::class, 'fotoBlob'])  ->name('foto-blob');
+    });
+});
+
+// Customer pesanan (tidak perlu login)
 Route::prefix('pesan')->name('customer.')->group(function () {
     Route::get('/',                [PesananController::class, 'index'])      ->name('home');
     Route::get('/kantin/{vendor}', [PesananController::class, 'pilihVendor'])->name('pilih-vendor');

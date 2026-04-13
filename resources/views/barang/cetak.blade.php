@@ -4,7 +4,7 @@
     <title>Cetak Label Barang TnJ 108</title>
     <style>
         @page { 
-            margin: 0; /* hilangkan margin bawaan pdf */
+            margin: 0;
         }
         body {
             margin: 0;
@@ -29,6 +29,7 @@
             overflow: hidden;
             background-color: white;
             border-radius: 5px;
+            padding: 1px 2px; 
         }
 
         .empty-cell {
@@ -36,50 +37,60 @@
         }
 
         .nama {
-            font-size: 7pt;
+            font-size: 6pt;    
             font-weight: bold;
             text-transform: uppercase;
             line-height: 1.1;
-            margin-bottom: 2px;
-            max-height: 8mm;
+            margin-bottom: 1px;
             word-wrap: break-word; 
         }
 
         .harga {
-            font-size: 10pt;
+            font-size: 8pt;      
             font-weight: bold;
             display: block;
         }
 
+        .barcode img {
+            width: 90%;
+            height: 14px;   
+            display: block;
+            margin: 1px auto;
+        }
+
         .id {
-            font-size: 6pt;
+            font-size: 5.5pt;
             color: #666;
-            margin-top: 4px;
             text-transform: uppercase;
+            line-height: 1;
         }
     </style>
 </head>
 <body>
 
     <table>
-        @php
-            $itemIndex = 0;
-        @endphp
+        @php $itemIndex = 0; @endphp
 
-        {{-- Loop 8 Baris --}}
         @for ($row = 0; $row < 8; $row++) 
             <tr>
-                {{-- Loop 5 kolom --}}
                 @for ($col = 0; $col < 5; $col++)
-                    @php 
-                        $currentCell = ($row * 5) + $col;
-                    @endphp
+                    @php $currentCell = ($row * 5) + $col; @endphp
 
                     @if ($currentCell >= $startIndex && $itemIndex < count($barang))
+                        @php $b = $barang[$itemIndex]; @endphp
                         <td>
-                            <div class="nama">{{ $barang[$itemIndex]->nama }}</div>
-                            <div class="harga">Rp {{ number_format($barang[$itemIndex]->harga, 0, ',', '.') }}</div>
-                            <div class="id">{{ str_pad($barang[$itemIndex]->id_barang, 4, '0', STR_PAD_LEFT) }}</div>
+                            <div class="nama">{{ $b->nama }}</div>
+                            <div class="harga">Rp {{ number_format($b->harga, 0, ',', '.') }}</div>
+
+                            <!-- Barcode di atas id_barang -->
+                            @if(isset($barcodes[$b->id_barang]))
+                                <div class="barcode">
+                                    <img src="data:image/svg+xml;base64,{{ $barcodes[$b->id_barang] }}">
+                                </div>
+                            @endif
+
+                            <div class="id">{{ $b->id_barang }}</div>
+
                             @php $itemIndex++; @endphp
                         </td>
                     @else

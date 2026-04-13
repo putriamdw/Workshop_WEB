@@ -6,7 +6,7 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+  
     use HasFactory, Notifiable;
 
     /**
@@ -61,7 +61,7 @@ class User extends Authenticatable
         return $this->role === 'customer';
     }
 
-    // Role 'user' lama diperlakukan sama seperti customer
+    // Role user lama diperlakukan sama seperti customer
     public function isUser(): bool
     {
         return $this->role === 'user';

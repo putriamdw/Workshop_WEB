@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void // menambahkan kolom
+    public function up(): void // Menambahkan kolom
     {
         Schema::table('users', function (Blueprint $table) {
             $table->string('id_google', 256)->nullable();
@@ -14,7 +14,7 @@ return new class extends Migration
         });
     }
 
-    public function down(): void // menghapus kolom jika rollback
+    public function down(): void // Menghapus kolom jika rollback
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn(['id_google', 'otp']);

@@ -16,37 +16,35 @@ use Illuminate\Support\Facades\Mail;
 class RegisteredUserController extends Controller
 {
 
-public function create()
-{
-    return view('auth.register');
-}
+    public function create()
+    {
+        return view('auth.register');
+    }
 
-public function store(Request $request)
-{
-    $request->validate([
-        'name' => ['required', 'string', 'max:255'],
-        'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-        'password' => ['required', 'confirmed'],
-    ]);
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'confirmed'],
+        ]);
 
-    $user = User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-    ]);
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
 
-    $otp = rand(100000, 999999);
-    $user->update(['otp' => $otp]);
+        $otp = rand(100000, 999999);
+        $user->update(['otp' => $otp]);
 
-    session(['otp_email' => $user->email]);
+        session(['otp_email' => $user->email]);
 
-    Mail::raw("Kode OTP Anda: $otp", function ($message) use ($user) {
-        $message->to($user->email)
-                ->subject('Kode OTP Registrasi');
-    });
+        Mail::raw("Kode OTP Anda: $otp", function ($message) use ($user) {
+            $message->to($user->email)
+                    ->subject('Kode OTP Registrasi');
+        });
 
-    return redirect()->route('otp.form');
-}
-
-
+        return redirect()->route('otp.form');
+    }
 }

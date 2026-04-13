@@ -37,7 +37,7 @@
             <a class="nav-link" href="{{ route('admin.vendor.index') }}">
                 <span class="menu-title">Data Vendor</span>
                 <i class="mdi mdi-store menu-icon"></i>
-            </a> 
+            </a>
         </li>
 
         <li class="nav-item {{ request()->routeIs('admin.pesanan.*') ? 'active' : '' }}">
@@ -47,12 +47,12 @@
             </a>
         </li>
 
-        <li class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+        <!-- <li class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('dashboard') }}">
                 <span class="menu-title">Dashboard Toko</span>
                 <i class="mdi mdi-home menu-icon"></i>
             </a>
-        </li>
+        </li> -->
 
         <li class="nav-item {{ request()->routeIs('kategori.*') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('kategori.index') }}">
@@ -73,6 +73,29 @@
                 <span class="menu-title">Barang</span>
                 <i class="mdi mdi-tag menu-icon"></i>
             </a>
+        </li>
+
+        {{-- Customer (SC3) — hanya admin --}}
+        <li class="nav-item {{ request()->routeIs('customer-data.*') ? 'active' : '' }}">
+            <a class="nav-link" data-bs-toggle="collapse" href="#customerMenu"
+               aria-expanded="{{ request()->routeIs('customer-data.*') ? 'true' : 'false' }}">
+                <span class="menu-title">Customer</span>
+                <i class="menu-arrow"></i>
+                <i class="mdi mdi-account-group menu-icon"></i>
+            </a>
+            <div class="collapse {{ request()->routeIs('customer-data.*') ? 'show' : '' }}" id="customerMenu">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('customer-data.index') }}">Data Customer</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('customer-data.tambah1') }}">Tambah Customer 1</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('customer-data.tambah2') }}">Tambah Customer 2</a>
+                    </li>
+                </ul>
+            </div>
         </li>
 
         <li class="nav-item {{ request()->routeIs('pdf.*') ? 'active' : '' }}">

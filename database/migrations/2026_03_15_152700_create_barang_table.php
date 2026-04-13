@@ -33,7 +33,7 @@ return new class extends Migration
             \$\$ LANGUAGE plpgsql;
         ");
 
-        // Pasang trigger ke tabel barang
+        // Trigger ke tabel barang
         DB::statement("
             CREATE TRIGGER trigger_id_barang
             BEFORE INSERT ON barang

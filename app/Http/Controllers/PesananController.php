@@ -10,9 +10,12 @@ use Illuminate\Support\Facades\DB;
 use Midtrans\Config as MidtransConfig;
 use Midtrans\Snap;
 use Midtrans\Notification;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\SvgWriter;
 
 class PesananController extends Controller
 {
+
     public function __construct()
     {
         MidtransConfig::$serverKey    = config('midtrans.server_key');
@@ -104,7 +107,7 @@ class PesananController extends Controller
             return redirect()->route('customer.sukses', $idPesanan);
         }
 
-        // Generate snap token kalau belum ada
+        // Generate snap token klo belum ada
         if (!$pesanan->midtrans_token) {
             $snapToken = $this->generateSnapToken($pesanan);
             $pesanan->update([
@@ -151,14 +154,21 @@ class PesananController extends Controller
     public function sukses(string $idPesanan)
     {
         $pesanan = Pesanan::with(['details', 'vendor'])->findOrFail($idPesanan);
-        return view('customer.sukses', compact('pesanan'));
+
+        $baseUrl = env('NGROK_URL', config('app.url'));
+        $qrCode  = new QrCode($baseUrl . '/pesan/sukses/' . $pesanan->id_pesanan);
+        $writer  = new SvgWriter();
+        $result  = $writer->write($qrCode);
+        $qrSvg   = base64_encode($result->getString());
+
+        return view('customer.sukses', compact('pesanan', 'qrSvg'));    
     }
 
     // Webhook Midtrans
     public function webhook(Request $request)
     {
         try {
-            // Verifikasi signature
+            // Verifikasi
             $serverKey    = config('midtrans.server_key');
             $orderId      = $request->input('order_id');
             $statusCode   = $request->input('status_code');
@@ -212,7 +222,6 @@ class PesananController extends Controller
         ]);
     }
 
-    // Cek status
     public function cekStatus(string $idPesanan)
     {
         $pesanan = Pesanan::find($idPesanan);

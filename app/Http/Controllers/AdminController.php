@@ -8,6 +8,7 @@ use App\Models\Pesanan;
 
 class AdminController extends Controller
 {
+    
     public function dashboard()
     {
         $totalVendor     = Vendor::count();

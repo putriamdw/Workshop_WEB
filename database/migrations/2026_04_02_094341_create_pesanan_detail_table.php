@@ -11,8 +11,8 @@ return new class extends Migration
             $table->increments('id');
             $table->string('id_pesanan', 30);
             $table->unsignedInteger('id_menu');
-            $table->string('nama_menu', 100);     // snapshot nama saat pesan
-            $table->decimal('harga_satuan', 12, 2); // snapshot harga saat pesan
+            $table->string('nama_menu', 100);     // Snapshot nama saat pesan
+            $table->decimal('harga_satuan', 12, 2); // Snapshot harga saat pesan
             $table->integer('jumlah');
             $table->decimal('subtotal', 12, 2);
             $table->timestamps();

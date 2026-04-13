@@ -6,21 +6,19 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void // dijalankan saat migrate
+
+public function up(): void // Dijalankan saat migrate
 {
-    if (!Schema::hasColumn('users', 'role')) { // cek jika kolom role belum ada di tabel users, baru ditambahkan
+    if (!Schema::hasColumn('users', 'role')) { // Cek jika kolom role belum ada di tabel users, baru ditambahkan
         Schema::table('users', function (Blueprint $table) { 
-            $table->string('role')->default('user'); // menambahkan kolom role dengan default user
+            $table->string('role')->default('user'); // Menambahkan kolom role dengan default user
         });
     }
 }
 
-public function down(): void // dijalankan saat rollback
+public function down(): void // Dijalankan saat rollback
 {
-    if (Schema::hasColumn('users', 'role')) { // cek jika kolom role ada di tabel users, baru dihapus
+    if (Schema::hasColumn('users', 'role')) { // Cek jika kolom role ada di tabel users, baru dihapus
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('role');
         });
