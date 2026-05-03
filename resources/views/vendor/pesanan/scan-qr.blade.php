@@ -16,7 +16,7 @@
             <div class="card-body">
 
                 {{-- Instruksi --}}
-                <div class="alert alert-info d-flex align-items-center mb-3" role="alert">
+                <div id="instruksi" class="alert alert-info d-flex align-items-center mb-3" role="alert">
                     <i class="mdi mdi-information me-2" style="font-size:1.2rem;"></i>
                     <small>Klik <strong>Mulai Scan</strong> lalu arahkan kamera ke QR Code dari HP customer.</small>
                 </div>
@@ -25,7 +25,7 @@
                 <div id="reader" style="width:100%; border-radius:12px; overflow:hidden; border:2px dashed #dee2e6;"></div>
 
                 {{-- Tombol --}}
-                <div class="text-center mt-3 d-flex gap-2 justify-content-center">
+                <div id="tombolScan" class="text-center mt-3 d-flex gap-2 justify-content-center">
                     <button id="btnMulai" class="btn btn-primary px-4">
                         <i class="mdi mdi-camera"></i> Mulai Scan
                     </button>
@@ -118,26 +118,35 @@ const btnScanLagi    = document.getElementById('btnScanLagi');
 const btnScanLagi2   = document.getElementById('btnScanLagi2');
 const hasilScan      = document.getElementById('hasilScan');
 const tidakDitemukan = document.getElementById('tidakDitemukan');
+const reader         = document.getElementById('reader');
+const instruksi      = document.getElementById('instruksi');
+const tombolScan     = document.getElementById('tombolScan');
 const beep           = document.getElementById('beep');
+
+function sembunyikanAreaScan() {
+    reader.setAttribute('style', 'display:none !important');
+    instruksi.setAttribute('style', 'display:none !important');
+    tombolScan.setAttribute('style', 'display:none !important');
+}
+
+function tampilkanAreaScan() {
+    reader.setAttribute('style', 'width:100%; border-radius:12px; overflow:hidden; border:2px dashed #dee2e6;');
+    instruksi.setAttribute('style', 'display:flex !important');
+    tombolScan.setAttribute('style', 'display:flex; justify-content:center; gap:8px; margin-top:12px;');
+}
 
 function resetTampilan() {
     hasilScan.style.display      = 'none';
     tidakDitemukan.style.display = 'none';
+    tampilkanAreaScan();
+    btnMulai.style.display = 'inline-block';
+    btnStop.style.display  = 'none';
     sudahScan = false;
-}
-
-function stopScanner() {
-    if (html5QrCode) {
-        html5QrCode.stop().then(() => {
-            btnMulai.style.display = 'inline-block';
-            btnStop.style.display  = 'none';
-        }).catch(err => console.error(err));
-    }
 }
 
 function mulaiScanner() {
     resetTampilan();
-    html5QrCode    = new Html5Qrcode("reader");
+    html5QrCode = new Html5Qrcode("reader");
     btnMulai.style.display = 'none';
     btnStop.style.display  = 'inline-block';
 
@@ -150,9 +159,14 @@ function mulaiScanner() {
 
             beep.currentTime = 0;
             beep.play();
-            stopScanner();
 
-            // Ekstrak id_pesanan dari URL kalau QR berisi URL sukses
+            // Sembunyikan dulu SEBELUM stop scanner
+            sembunyikanAreaScan();
+
+            // Stop scanner di background
+            html5QrCode.stop().catch(err => console.error(err));
+
+            // Ekstrak id_pesanan
             let idPesanan = decodedText;
             const match   = decodedText.match(/\/pesan\/sukses\/([^\/\?#]+)/);
             if (match) idPesanan = match[1];
@@ -196,7 +210,10 @@ function mulaiScanner() {
 }
 
 btnMulai.addEventListener('click',  mulaiScanner);
-btnStop.addEventListener('click',   () => { stopScanner(); resetTampilan(); btnMulai.style.display = 'inline-block'; });
+btnStop.addEventListener('click',   () => {
+    html5QrCode.stop().catch(err => console.error(err));
+    resetTampilan();
+});
 btnScanLagi.addEventListener('click',  mulaiScanner);
 btnScanLagi2.addEventListener('click', mulaiScanner);
 </script>
@@ -224,5 +241,4 @@ btnScanLagi2.addEventListener('click', mulaiScanner);
         </ul>
     </div>
 </div>
-
 @endsection
