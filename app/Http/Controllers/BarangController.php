@@ -60,4 +60,28 @@ class BarangController extends Controller
         return redirect()->route('barang.index')
             ->with('success', 'Data berhasil dihapus');
     }
+
+    // Halaman scanner barcode
+    public function scanner()
+    {
+        return view('barang.scanner');
+    }
+
+    // API: cari barang berdasarkan id_barang yang di-scan
+    public function cariBarcode($id_barang)
+    {
+        $barang = Barang::where('id_barang', $id_barang)->first();
+
+        if (!$barang) {
+            return response()->json(['found' => false], 404);
+        }
+
+        return response()->json([
+            'found'     => true,
+            'id_barang' => $barang->id_barang,
+            'nama'      => $barang->nama,
+            'harga'     => $barang->harga,
+            'harga_format' => 'Rp ' . number_format($barang->harga, 0, ',', '.'),
+        ]);
+    }
 }

@@ -79,6 +79,6 @@
             </table>
         </div>
     </div>
-    <div class="mt-3">{{ $pesanan->links() }}</div>
+    <div class="mt-3">{{ $pesanan->links('pagination::bootstrap-5') }}</div>
 </div>
 @endsection

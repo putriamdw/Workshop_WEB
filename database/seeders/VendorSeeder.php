@@ -53,10 +53,10 @@ class VendorSeeder extends Seeder
 
         // Contoh customer baru
         User::create([
-            'name'     => 'Andi Customer',
+            'name'     => 'Andi Admin',
             'email'    => 'andi@gmail.com',
             'password' => Hash::make('password'),
-            'role'     => 'customer',
+            'role'     => 'admin',
         ]);
     }
 }

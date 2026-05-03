@@ -47,13 +47,6 @@
             </a>
         </li>
 
-        <!-- <li class="nav-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ route('dashboard') }}">
-                <span class="menu-title">Dashboard Toko</span>
-                <i class="mdi mdi-home menu-icon"></i>
-            </a>
-        </li> -->
-
         <li class="nav-item {{ request()->routeIs('kategori.*') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('kategori.index') }}">
                 <span class="menu-title">Kategori</span>
@@ -68,10 +61,24 @@
             </a>
         </li>
 
-        <li class="nav-item {{ request()->routeIs('barang.*') ? 'active' : '' }}">
+        <li class="nav-item {{ request()->routeIs('barang.index', 'barang.create', 'barang.edit', 'barang.show') ? 'active' : '' }}">
             <a class="nav-link" href="{{ route('barang.index') }}">
                 <span class="menu-title">Barang</span>
                 <i class="mdi mdi-tag menu-icon"></i>
+            </a>
+        </li>
+
+        <li class="nav-item {{ request()->routeIs('barang.scanner') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('barang.scanner') }}">
+                <span class="menu-title">Barcode Scanner</span>
+                <i class="mdi mdi-barcode-scan menu-icon"></i>
+            </a>
+        </li>
+
+        <li class="nav-item {{ request()->routeIs('admin.scan-qr') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('admin.scan-qr') }}">
+                <span class="menu-title">Scan QR Pesanan</span>
+                <i class="mdi mdi-qrcode-scan menu-icon"></i>
             </a>
         </li>
 
@@ -167,26 +174,34 @@
     {{-- VENDOR --}}
     @elseif(Auth::user()->role == 'vendor')
 
-        <li class="nav-item {{ request()->routeIs('vendor.dashboard') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ route('vendor.dashboard') }}">
-                <span class="menu-title">Dashboard</span>
-                <i class="mdi mdi-view-dashboard menu-icon"></i>
-            </a>
-        </li>
+    <li class="nav-item {{ request()->routeIs('vendor.dashboard') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('vendor.dashboard') }}">
+            <span class="menu-title">Dashboard</span>
+            <i class="mdi mdi-view-dashboard menu-icon"></i>
+        </a>
+    </li>
 
-        <li class="nav-item {{ request()->routeIs('vendor.menu.*') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ route('vendor.menu.index') }}">
-                <span class="menu-title">Kelola Menu</span>
-                <i class="mdi mdi-food menu-icon"></i>
-            </a>
-        </li>
+    <li class="nav-item {{ request()->routeIs('vendor.menu.*') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('vendor.menu.index') }}">
+            <span class="menu-title">Kelola Menu</span>
+            <i class="mdi mdi-food menu-icon"></i>
+        </a>
+    </li>
 
-        <li class="nav-item {{ request()->routeIs('vendor.pesanan.*') ? 'active' : '' }}">
-            <a class="nav-link" href="{{ route('vendor.pesanan.index') }}">
-                <span class="menu-title">Pesanan Lunas</span>
-                <i class="mdi mdi-receipt menu-icon"></i>
-            </a>
-        </li>
+    <li class="nav-item {{ request()->routeIs('vendor.pesanan.index') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('vendor.pesanan.index') }}">
+            <span class="menu-title">Pesanan Lunas</span>
+            <i class="mdi mdi-receipt menu-icon"></i>
+        </a>
+    </li>
+
+    {{-- Scan QR Code --}}
+    <li class="nav-item {{ request()->routeIs('vendor.pesanan.scan-qr') ? 'active' : '' }}">
+        <a class="nav-link" href="{{ route('vendor.pesanan.scan-qr') }}">
+            <span class="menu-title">Scan QR Customer</span>
+            <i class="mdi mdi-qrcode-scan menu-icon"></i>
+        </a>
+    </li>
 
     {{-- USER BIASA --}}
     @else

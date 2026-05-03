@@ -19,29 +19,23 @@ Route::get('/', function () {
     return redirect('/login');
 });
 
-// Google OAuth
+// ── Google OAuth ──────────────────────────────────────────────────────────────
 Route::get('/auth/google/redirect', [AuthController::class, 'redirectToGoogle'])
     ->name('google.redirect');
 Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])
     ->name('google.callback');
 
-// OTP (tanpa auth)
+// ── OTP (tanpa auth) ──────────────────────────────────────────────────────────
 Route::get('/verify-otp',  [AuthController::class, 'showOtpForm'])->name('otp.form');
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])  ->name('otp.verify');
 
-// Route yang butuh login
+// ── Route yang butuh login ────────────────────────────────────────────────────
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard', function () {
         $user = auth()->user();
-
-        if ($user->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        }
-        if ($user->role === 'vendor') {
-            return redirect()->route('vendor.dashboard');
-        }
-
+        if ($user->role === 'admin')  return redirect()->route('admin.dashboard');
+        if ($user->role === 'vendor') return redirect()->route('vendor.dashboard');
         return view('dashboard', [
             'totalBuku'     => Buku::count(),
             'totalKategori' => Kategori::count(),
@@ -57,7 +51,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/generate-undangan',   [GeneratePdfController::class, 'undangan'])  ->name('pdf.undangan');
 
     // Barang
-    Route::post('/barang/cetak', [GeneratePdfController::class, 'tagHarga'])->name('barang.cetak');
+    Route::post('/barang/cetak',           [GeneratePdfController::class, 'tagHarga'])   ->name('barang.cetak');
+    Route::get('/barcode-scanner',         [BarangController::class,      'scanner'])    ->name('barang.scanner');
+    Route::get('/barcode/cari/{id_barang}',[BarangController::class,      'cariBarcode'])->name('barang.cari-barcode');
     Route::resource('barang', BarangController::class);
 
     // JS Tugas
@@ -80,7 +76,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pos-axios',        [PosController::class, 'indexAxios'])->name('pos.axios');
 });
 
-// Hanya admin: CRUD kategori, buku, customer data
+// ── Hanya admin ───────────────────────────────────────────────────────────────
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('kategori/create',    [KategoriController::class, 'create']) ->name('kategori.create');
     Route::post('kategori',          [KategoriController::class, 'store'])  ->name('kategori.store');
@@ -94,7 +90,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::put('buku/{id}',          [BukuController::class, 'update'])->name('buku.update');
     Route::delete('buku/{id}',       [BukuController::class, 'destroy'])->name('buku.destroy');
 
-    // Customer Data (SC3) - hanya admin
     Route::prefix('customer-data')->name('customer-data.')->group(function () {
         Route::get('/',          [CustomerController::class, 'index'])     ->name('index');
         Route::get('/tambah1',   [CustomerController::class, 'createBlob'])->name('tambah1');
@@ -105,7 +100,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     });
 });
 
-// Customer pesanan (tidak perlu login)
+// ── Customer pesanan (tidak perlu login) ──────────────────────────────────────
 Route::prefix('pesan')->name('customer.')->group(function () {
     Route::get('/',                [PesananController::class, 'index'])      ->name('home');
     Route::get('/kantin/{vendor}', [PesananController::class, 'pilihVendor'])->name('pilih-vendor');
@@ -113,13 +108,14 @@ Route::prefix('pesan')->name('customer.')->group(function () {
     Route::get('/bayar/{id}',      [PesananController::class, 'bayar'])      ->name('bayar');
     Route::get('/sukses/{id}',     [PesananController::class, 'sukses'])     ->name('sukses');
     Route::get('/status/{id}',     [PesananController::class, 'cekStatus'])  ->name('cek-status');
+    Route::get('/qrcode/{id}',     [PesananController::class, 'qrcode'])     ->name('qrcode'); // ← baru
 });
 
-// Webhook Midtrans (tanpa auth, tanpa CSRF)
+// ── Webhook Midtrans (tanpa auth, tanpa CSRF) ─────────────────────────────────
 Route::post('/webhook/midtrans', [PesananController::class, 'webhook'])
     ->name('webhook.midtrans');
 
-// Vendor
+// ── Vendor ────────────────────────────────────────────────────────────────────
 Route::middleware(['auth', 'role:vendor'])->prefix('vendor')->name('vendor.')->group(function () {
     Route::get('/setup',  [VendorController::class, 'setupForm']) ->name('setup');
     Route::post('/setup', [VendorController::class, 'setupStore'])->name('setup.store');
@@ -137,15 +133,20 @@ Route::middleware(['auth', 'role:vendor'])->prefix('vendor')->name('vendor.')->g
         });
 
         Route::prefix('pesanan')->name('pesanan.')->group(function () {
-            Route::get('/',     [VendorController::class, 'pesananIndex'])->name('index');
-            Route::get('/{id}', [VendorController::class, 'pesananShow']) ->name('show');
+            Route::get('/',          [VendorController::class, 'pesananIndex'])->name('index');
+            Route::get('/scan-qr',   [VendorController::class, 'scanQr'])      ->name('scan-qr');
+            Route::get('/cari/{id}', [VendorController::class, 'cariPesanan']) ->name('cari');    
+            Route::get('/{id}',      [VendorController::class, 'pesananShow']) ->name('show');    
         });
     });
 });
 
-// Admin
+// ── Admin ─────────────────────────────────────────────────────────────────────
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+
+    Route::get('/scan-qr',         [AdminController::class, 'scanQr'])      ->name('scan-qr');
+    Route::get('/scan-qr/cari/{id}',[AdminController::class, 'cariPesanan'])->name('scan-qr.cari');
 
     Route::prefix('vendor')->name('vendor.')->group(function () {
         Route::get('/',                  [AdminController::class, 'vendorIndex']) ->name('index');

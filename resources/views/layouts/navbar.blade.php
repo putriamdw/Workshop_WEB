@@ -28,26 +28,24 @@
             <p class="mb-1 text-black">{{ Auth::check() ? Auth::user()->name : 'Guest' }}</p>
           </div>
         </a>
-    
         <div class="dropdown-menu navbar-dropdown" aria-labelledby="profileDropdown">
-    @auth
-    <a class="dropdown-item" href="#">
-        <i class="mdi mdi-cached me-2 text-success"></i> Activity Log
-    </a>
-    <div class="dropdown-divider"></div>
-    <form action="{{ route('logout') }}" method="POST">
-    @csrf
-        <button type="submit" class="dropdown-item">
-            <i class="mdi mdi-logout me-2 text-primary"></i> Signout
-        </button>
-    </form>
-    @else
-    <a class="dropdown-item" href="{{ route('login') }}">
-        <i class="mdi mdi-login me-2 text-primary"></i> Login
-    </a>
-    @endauth
-</div>
-
+          @auth
+          <a class="dropdown-item" href="#">
+              <i class="mdi mdi-cached me-2 text-success"></i> Activity Log
+          </a>
+          <div class="dropdown-divider"></div>
+          <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="dropdown-item">
+                <i class="mdi mdi-logout me-2 text-primary"></i> Signout
+            </button>
+          </form>
+          @else
+          <a class="dropdown-item" href="{{ route('login') }}">
+              <i class="mdi mdi-login me-2 text-primary"></i> Login
+          </a>
+          @endauth
+        </div>
       </li>
       <li class="nav-item d-none d-lg-block full-screen-link">
         <a class="nav-link">
@@ -68,7 +66,7 @@
             </div>
             <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
               <h6 class="preview-subject ellipsis mb-1 font-weight-normal">Mark send you a message</h6>
-              <p class="text-gray mb-0"> 1 Minutes ago </p>
+              <p class="text-gray mb-0">1 Minutes ago</p>
             </div>
           </a>
           <div class="dropdown-divider"></div>
@@ -78,7 +76,7 @@
             </div>
             <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
               <h6 class="preview-subject ellipsis mb-1 font-weight-normal">Cregh send you a message</h6>
-              <p class="text-gray mb-0"> 15 Minutes ago </p>
+              <p class="text-gray mb-0">15 Minutes ago</p>
             </div>
           </a>
           <div class="dropdown-divider"></div>
@@ -88,7 +86,7 @@
             </div>
             <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
               <h6 class="preview-subject ellipsis mb-1 font-weight-normal">Profile picture updated</h6>
-              <p class="text-gray mb-0"> 18 Minutes ago </p>
+              <p class="text-gray mb-0">18 Minutes ago</p>
             </div>
           </a>
           <div class="dropdown-divider"></div>
@@ -105,37 +103,31 @@
           <div class="dropdown-divider"></div>
           <a class="dropdown-item preview-item">
             <div class="preview-thumbnail">
-              <div class="preview-icon bg-success">
-                <i class="mdi mdi-calendar"></i>
-              </div>
+              <div class="preview-icon bg-success"><i class="mdi mdi-calendar"></i></div>
             </div>
             <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
               <h6 class="preview-subject font-weight-normal mb-1">Event today</h6>
-              <p class="text-gray ellipsis mb-0"> Just a reminder that you have an event today </p>
+              <p class="text-gray ellipsis mb-0">Just a reminder that you have an event today</p>
             </div>
           </a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item preview-item">
             <div class="preview-thumbnail">
-              <div class="preview-icon bg-warning">
-                <i class="mdi mdi-cog"></i>
-              </div>
+              <div class="preview-icon bg-warning"><i class="mdi mdi-cog"></i></div>
             </div>
             <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
               <h6 class="preview-subject font-weight-normal mb-1">Settings</h6>
-              <p class="text-gray ellipsis mb-0"> Update dashboard </p>
+              <p class="text-gray ellipsis mb-0">Update dashboard</p>
             </div>
           </a>
           <div class="dropdown-divider"></div>
           <a class="dropdown-item preview-item">
             <div class="preview-thumbnail">
-              <div class="preview-icon bg-info">
-                <i class="mdi mdi-link-variant"></i>
-              </div>
+              <div class="preview-icon bg-info"><i class="mdi mdi-link-variant"></i></div>
             </div>
             <div class="preview-item-content d-flex align-items-start flex-column justify-content-center">
               <h6 class="preview-subject font-weight-normal mb-1">Launch Admin</h6>
-              <p class="text-gray ellipsis mb-0"> New admin wow! </p>
+              <p class="text-gray ellipsis mb-0">New admin wow!</p>
             </div>
           </a>
           <div class="dropdown-divider"></div>
@@ -143,21 +135,17 @@
         </div>
       </li>
       <li class="nav-item nav-logout d-none d-lg-block">
-        <a class="nav-link" href="#">
-          <i class="mdi mdi-power"></i>
-        </a>
+        <a class="nav-link" href="#"><i class="mdi mdi-power"></i></a>
       </li>
       <li class="nav-item nav-settings d-none d-lg-block">
-        <a class="nav-link" href="#">
-          <i class="mdi mdi-format-line-spacing"></i>
-        </a>
+        <a class="nav-link" href="#"><i class="mdi mdi-format-line-spacing"></i></a>
       </li>
     </ul>
-    <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-bs-toggle="offcanvas">
+
+    {{-- Tombol hamburger mobile — HANYA data-toggle, tanpa data-bs-toggle --}}
+    <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button">
       <span class="mdi mdi-menu"></span>
     </button>
+
   </div>
 </nav>
-
-
-

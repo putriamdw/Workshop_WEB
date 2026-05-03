@@ -15,7 +15,6 @@ use Endroid\QrCode\Writer\SvgWriter;
 
 class PesananController extends Controller
 {
-
     public function __construct()
     {
         MidtransConfig::$serverKey    = config('midtrans.server_key');
@@ -24,22 +23,31 @@ class PesananController extends Controller
         MidtransConfig::$is3ds        = true;
     }
 
-    // Halaman pilih vendor
     public function index()
     {
+        // Vendor tidak boleh akses halaman pesan
+        if (auth()->check() && auth()->user()->role === 'vendor') {
+            return redirect()->route('vendor.dashboard')
+                ->with('error', 'Vendor tidak dapat melakukan pemesanan.');
+        }
+
         $vendors = Vendor::where('aktif', true)->with('menus')->get();
         return view('customer.index', compact('vendors'));
     }
 
-    // Halaman menu dari vendor tertentu
     public function pilihVendor(Vendor $vendor)
     {
+        // Vendor tidak boleh pesan di kantinnya sendiri
+        if (auth()->check() && auth()->user()->role === 'vendor') {
+            return redirect()->route('vendor.dashboard')
+                ->with('error', 'Vendor tidak dapat melakukan pemesanan.');
+        }
+
         abort_if(!$vendor->aktif, 404);
         $menus = $vendor->menus()->where('tersedia', true)->get();
         return view('customer.pesan', compact('vendor', 'menus'));
     }
 
-    // Proses buat pesanan
     public function store(Request $request)
     {
         $request->validate([
@@ -59,7 +67,6 @@ class PesananController extends Controller
                 $menu     = Menu::findOrFail($item['id_menu']);
                 $subtotal = $menu->harga * $item['jumlah'];
                 $total   += $subtotal;
-
                 $details[] = [
                     'id_menu'      => $menu->id_menu,
                     'nama_menu'    => $menu->nama_menu,
@@ -98,7 +105,6 @@ class PesananController extends Controller
         }
     }
 
-    // Halaman pembayaran
     public function bayar(string $idPesanan)
     {
         $pesanan = Pesanan::with(['details', 'vendor'])->findOrFail($idPesanan);
@@ -107,7 +113,6 @@ class PesananController extends Controller
             return redirect()->route('customer.sukses', $idPesanan);
         }
 
-        // Generate snap token klo belum ada
         if (!$pesanan->midtrans_token) {
             $snapToken = $this->generateSnapToken($pesanan);
             $pesanan->update([
@@ -141,40 +146,45 @@ class PesananController extends Controller
                 'first_name' => $pesanan->user?->name ?? $pesanan->nama_guest,
                 'email'      => $pesanan->user?->email ?? ($pesanan->nama_guest . '@guest.kantin'),
             ],
-            'enabled_payments' => [
-                'bca_va', 'bni_va', 'bri_va', 'mandiri_va', 'gopay', 'qris',
-            ],
-            'expiry' => ['unit' => 'hours', 'duration' => 2],
+            'enabled_payments' => ['bca_va', 'bni_va', 'bri_va', 'mandiri_va', 'gopay', 'qris'],
+            'expiry'           => ['unit' => 'hours', 'duration' => 2],
         ];
 
         return Snap::getSnapToken($params);
     }
 
-    // Halaman sukses
-    public function sukses(string $idPesanan)
+    private function generateQr(Pesanan $pesanan): string
     {
-        $pesanan = Pesanan::with(['details', 'vendor'])->findOrFail($idPesanan);
-
         $baseUrl = env('NGROK_URL', config('app.url'));
         $qrCode  = new QrCode($baseUrl . '/pesan/sukses/' . $pesanan->id_pesanan);
         $writer  = new SvgWriter();
         $result  = $writer->write($qrCode);
-        $qrSvg   = base64_encode($result->getString());
-
-        return view('customer.sukses', compact('pesanan', 'qrSvg'));    
+        return base64_encode($result->getString());
     }
 
-    // Webhook Midtrans
+    public function sukses(string $idPesanan)
+    {
+        $pesanan = Pesanan::with(['details', 'vendor'])->findOrFail($idPesanan);
+        $qrSvg   = $this->generateQr($pesanan);
+        return view('customer.sukses', compact('pesanan', 'qrSvg'));
+    }
+
+    public function qrcode(string $idPesanan)
+    {
+        $pesanan = Pesanan::with(['vendor', 'details'])->findOrFail($idPesanan);
+        $qrSvg   = $this->generateQr($pesanan);
+        return view('customer.qrcode', compact('pesanan', 'qrSvg'));
+    }
+
     public function webhook(Request $request)
     {
         try {
-            // Verifikasi
-            $serverKey    = config('midtrans.server_key');
-            $orderId      = $request->input('order_id');
-            $statusCode   = $request->input('status_code');
-            $grossAmount  = $request->input('gross_amount');
-            $sigKey       = $request->input('signature_key');
-            $expectedSig  = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
+            $serverKey   = config('midtrans.server_key');
+            $orderId     = $request->input('order_id');
+            $statusCode  = $request->input('status_code');
+            $grossAmount = $request->input('gross_amount');
+            $sigKey      = $request->input('signature_key');
+            $expectedSig = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
 
             if ($sigKey !== $expectedSig) {
                 return response()->json(['message' => 'Invalid signature'], 403);

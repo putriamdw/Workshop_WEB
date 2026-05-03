@@ -27,7 +27,6 @@ class VendorController extends Controller
         ));
     }
 
-    // Form setup profil vendor (pertama kali login)
     public function setupForm()
     {
         if (auth()->user()->vendor) {
@@ -60,7 +59,6 @@ class VendorController extends Controller
             ->with('success', 'Profil kantin berhasil dibuat!');
     }
 
-    // CRUD Menu 
     public function menuIndex()
     {
         $vendor = auth()->user()->vendor;
@@ -149,7 +147,6 @@ class VendorController extends Controller
             ->with('success', 'Menu berhasil dihapus!');
     }
 
-    // Pesanan Lunas 
     public function pesananIndex()
     {
         $vendor  = auth()->user()->vendor;
@@ -172,5 +169,41 @@ class VendorController extends Controller
             ->firstOrFail();
 
         return view('vendor.pesanan.show', compact('pesanan'));
+    }
+
+    // Halaman scan QR Code customer
+    public function scanQr()
+    {
+        return view('vendor.pesanan.scan-qr');
+    }
+
+    // API: cari pesanan berdasarkan id yang di-scan
+    public function cariPesanan(string $id)
+    {
+        $vendor  = auth()->user()->vendor;
+        $pesanan = Pesanan::with('details')
+            ->where('id_pesanan', $id)
+            ->where('id_vendor', $vendor->id_vendor)
+            ->first();
+
+        if (!$pesanan) {
+            return response()->json([
+                'found'   => false,
+                'message' => 'Pesanan tidak ditemukan atau bukan milik kantin ini.',
+            ], 404);
+        }
+
+        return response()->json([
+            'found'        => true,
+            'id_pesanan'   => $pesanan->id_pesanan,
+            'nama_pembeli' => $pesanan->nama_pembeli,
+            'status_bayar' => $pesanan->status_bayar,
+            'total_format' => $pesanan->total_format,
+            'details'      => $pesanan->details->map(fn($d) => [
+                'nama_menu' => $d->nama_menu,
+                'jumlah'    => $d->jumlah,
+                'subtotal'  => $d->subtotal_format,
+            ]),
+        ]);
     }
 }

@@ -6,7 +6,8 @@
 <script src="{{ asset('assets/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js') }}"></script>
 
 <!-- inject:js -->
-<script src="{{ asset('assets/js/off-canvas.js') }}"></script>
+{{-- off-canvas.js bawaan template dinonaktifkan, diganti script custom di main.blade.php --}}
+{{-- <script src="{{ asset('assets/js/off-canvas.js') }}"></script> --}}
 <script src="{{ asset('assets/js/misc.js') }}"></script>
 <script src="{{ asset('assets/js/settings.js') }}"></script>
 <script src="{{ asset('assets/js/todolist.js') }}"></script>
@@ -15,5 +16,5 @@
 <!-- Custom js -->
 <script src="{{ asset('assets/js/dashboard.js') }}"></script>
 
-<!-- ✅ DataTables saja -->
+<!-- DataTables -->
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>

@@ -74,4 +74,38 @@ class AdminController extends Controller
         $pesanan = Pesanan::with(['vendor', 'user', 'details'])->findOrFail($idPesanan);
         return view('admin.pesanan.show', compact('pesanan'));
     }
+
+    public function scanQr()
+    {
+        return view('admin.scan-qr');
+    }
+
+    // API: cari pesanan berdasarkan id yang di-scan (admin bisa lihat semua vendor)
+    public function cariPesanan(string $id)
+    {
+        $pesanan = Pesanan::with(['details', 'vendor'])
+            ->where('id_pesanan', $id)
+            ->first();
+
+        if (!$pesanan) {
+            return response()->json([
+                'found'   => false,
+                'message' => 'Pesanan tidak ditemukan.',
+            ], 404);
+        }
+
+        return response()->json([
+            'found'        => true,
+            'id_pesanan'   => $pesanan->id_pesanan,
+            'nama_pembeli' => $pesanan->nama_pembeli,
+            'nama_kantin'  => $pesanan->vendor->nama_kantin,
+            'status_bayar' => $pesanan->status_bayar,
+            'total_format' => $pesanan->total_format,
+            'details'      => $pesanan->details->map(fn($d) => [
+                'nama_menu' => $d->nama_menu,
+                'jumlah'    => $d->jumlah,
+                'subtotal'  => $d->subtotal_format,
+            ]),
+        ]);
+    }
 }
