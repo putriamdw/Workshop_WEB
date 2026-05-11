@@ -82,6 +82,26 @@
             </a>
         </li>
 
+        {{-- Toko & Kunjungan — hanya admin --}}
+        <li class="nav-item {{ request()->routeIs('toko.*') ? 'active' : '' }}">
+            <a class="nav-link" data-bs-toggle="collapse" href="#tokoMenu"
+               aria-expanded="{{ request()->routeIs('toko.*') ? 'true' : 'false' }}">
+                <span class="menu-title">Toko & Kunjungan</span>
+                <i class="menu-arrow"></i>
+                <i class="mdi mdi-map-marker-multiple menu-icon"></i>
+            </a>
+            <div class="collapse {{ request()->routeIs('toko.*') ? 'show' : '' }}" id="tokoMenu">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('toko.index') }}">Data Toko</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('toko.riwayat') }}">Riwayat Kunjungan</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+
         {{-- Customer (SC3) — hanya admin --}}
         <li class="nav-item {{ request()->routeIs('customer-data.*') ? 'active' : '' }}">
             <a class="nav-link" data-bs-toggle="collapse" href="#customerMenu"
@@ -174,34 +194,63 @@
     {{-- VENDOR --}}
     @elseif(Auth::user()->role == 'vendor')
 
-    <li class="nav-item {{ request()->routeIs('vendor.dashboard') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('vendor.dashboard') }}">
-            <span class="menu-title">Dashboard</span>
-            <i class="mdi mdi-view-dashboard menu-icon"></i>
-        </a>
-    </li>
+        <li class="nav-item {{ request()->routeIs('vendor.dashboard') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('vendor.dashboard') }}">
+                <span class="menu-title">Dashboard</span>
+                <i class="mdi mdi-view-dashboard menu-icon"></i>
+            </a>
+        </li>
 
-    <li class="nav-item {{ request()->routeIs('vendor.menu.*') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('vendor.menu.index') }}">
-            <span class="menu-title">Kelola Menu</span>
-            <i class="mdi mdi-food menu-icon"></i>
-        </a>
-    </li>
+        <li class="nav-item {{ request()->routeIs('vendor.menu.*') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('vendor.menu.index') }}">
+                <span class="menu-title">Kelola Menu</span>
+                <i class="mdi mdi-food menu-icon"></i>
+            </a>
+        </li>
 
-    <li class="nav-item {{ request()->routeIs('vendor.pesanan.index') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('vendor.pesanan.index') }}">
-            <span class="menu-title">Pesanan Lunas</span>
-            <i class="mdi mdi-receipt menu-icon"></i>
-        </a>
-    </li>
+        <li class="nav-item {{ request()->routeIs('vendor.pesanan.index') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('vendor.pesanan.index') }}">
+                <span class="menu-title">Pesanan Lunas</span>
+                <i class="mdi mdi-receipt menu-icon"></i>
+            </a>
+        </li>
 
-    {{-- Scan QR Code --}}
-    <li class="nav-item {{ request()->routeIs('vendor.pesanan.scan-qr') ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('vendor.pesanan.scan-qr') }}">
-            <span class="menu-title">Scan QR Customer</span>
-            <i class="mdi mdi-qrcode-scan menu-icon"></i>
-        </a>
-    </li>
+        <li class="nav-item {{ request()->routeIs('vendor.pesanan.scan-qr') ? 'active' : '' }}">
+            <a class="nav-link" href="{{ route('vendor.pesanan.scan-qr') }}">
+                <span class="menu-title">Scan QR Customer</span>
+                <i class="mdi mdi-qrcode-scan menu-icon"></i>
+            </a>
+        </li>
+
+        {{-- Toko Kantin Vendor --}}
+        <li class="nav-item {{ request()->routeIs('vendor.titik-awal', 'vendor.qrcode', 'vendor.riwayat') ? 'active' : '' }}">
+            <a class="nav-link" data-bs-toggle="collapse" href="#tokoVendorMenu"
+            aria-expanded="{{ request()->routeIs('vendor.titik-awal', 'vendor.qrcode', 'vendor.riwayat') ? 'true' : 'false' }}">
+                <span class="menu-title">Kantin Saya</span>
+                <i class="menu-arrow"></i>
+                <i class="mdi mdi-map-marker menu-icon"></i>
+            </a>
+            <div class="collapse {{ request()->routeIs('vendor.titik-awal', 'vendor.qrcode', 'vendor.riwayat') ? 'show' : '' }}"
+                id="tokoVendorMenu">
+                <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('vendor.titik-awal') }}">
+                            Input Titik Awal
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('vendor.qrcode') }}">
+                            Cetak QR Code
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('vendor.riwayat') }}">
+                            Riwayat Kunjungan
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </li>
 
     {{-- USER BIASA --}}
     @else

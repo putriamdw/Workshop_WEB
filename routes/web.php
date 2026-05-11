@@ -11,6 +11,7 @@ use App\Http\Controllers\PesananController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\TokoController;
 use App\Models\Buku;
 use App\Models\Kategori;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,10 @@ Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallbac
 // ── OTP (tanpa auth) ──────────────────────────────────────────────────────────
 Route::get('/verify-otp',  [AuthController::class, 'showOtpForm'])->name('otp.form');
 Route::post('/verify-otp', [AuthController::class, 'verifyOtp'])  ->name('otp.verify');
+
+// ── Customer: Titik Kunjungan (TANPA LOGIN) ───────────────────────────────────
+Route::get('/kunjungan',  [TokoController::class, 'kunjungan'])      ->name('toko.kunjungan');
+Route::post('/kunjungan', [TokoController::class, 'simpanKunjungan'])->name('toko.simpan-kunjungan');
 
 // ── Route yang butuh login ────────────────────────────────────────────────────
 Route::middleware(['auth'])->group(function () {
@@ -98,6 +103,20 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::post('/tambah2',  [CustomerController::class, 'storeFile']) ->name('store-file');
         Route::get('/foto/{id}', [CustomerController::class, 'fotoBlob'])  ->name('foto-blob');
     });
+
+    // Toko - admin: CRUD + QR Code + riwayat
+    Route::get('/toko',                  [TokoController::class, 'index'])          ->name('toko.index');
+    Route::get('/toko/create',           [TokoController::class, 'create'])         ->name('toko.create');
+    Route::get('/toko/riwayat',          [TokoController::class, 'riwayat'])        ->name('toko.riwayat');
+    Route::post('/toko',                 [TokoController::class, 'store'])          ->name('toko.store');
+    Route::get('/toko/{id}/edit',        [TokoController::class, 'edit'])           ->name('toko.edit');
+    Route::put('/toko/{id}',             [TokoController::class, 'update'])         ->name('toko.update');
+    Route::delete('/toko/{id}',          [TokoController::class, 'destroy'])        ->name('toko.destroy');
+    Route::get('/toko/{id}/qrcode',      [TokoController::class, 'qrcode'])         ->name('toko.qrcode');
+
+    // Admin juga bisa input titik awal untuk semua toko
+    Route::get('/toko/{id}/titik-awal',  [TokoController::class, 'titikAwal'])      ->name('toko.titik-awal');
+    Route::post('/toko/{id}/titik-awal', [TokoController::class, 'simpanTitikAwal'])->name('toko.simpan-titik-awal');
 });
 
 // ── Customer pesanan (tidak perlu login) ──────────────────────────────────────
@@ -108,7 +127,7 @@ Route::prefix('pesan')->name('customer.')->group(function () {
     Route::get('/bayar/{id}',      [PesananController::class, 'bayar'])      ->name('bayar');
     Route::get('/sukses/{id}',     [PesananController::class, 'sukses'])     ->name('sukses');
     Route::get('/status/{id}',     [PesananController::class, 'cekStatus'])  ->name('cek-status');
-    Route::get('/qrcode/{id}',     [PesananController::class, 'qrcode'])     ->name('qrcode'); // ← baru
+    Route::get('/qrcode/{id}',     [PesananController::class, 'qrcode'])     ->name('qrcode');
 });
 
 // ── Webhook Midtrans (tanpa auth, tanpa CSRF) ─────────────────────────────────
@@ -135,9 +154,15 @@ Route::middleware(['auth', 'role:vendor'])->prefix('vendor')->name('vendor.')->g
         Route::prefix('pesanan')->name('pesanan.')->group(function () {
             Route::get('/',          [VendorController::class, 'pesananIndex'])->name('index');
             Route::get('/scan-qr',   [VendorController::class, 'scanQr'])      ->name('scan-qr');
-            Route::get('/cari/{id}', [VendorController::class, 'cariPesanan']) ->name('cari');    
-            Route::get('/{id}',      [VendorController::class, 'pesananShow']) ->name('show');    
+            Route::get('/cari/{id}', [VendorController::class, 'cariPesanan']) ->name('cari');
+            Route::get('/{id}',      [VendorController::class, 'pesananShow']) ->name('show');
         });
+
+        // Vendor: input titik awal kantinnya sendiri
+        Route::get('/titik-awal',  [TokoController::class, 'titikAwalVendor'])      ->name('titik-awal');
+        Route::post('/titik-awal', [TokoController::class, 'simpanTitikAwalVendor'])->name('simpan-titik-awal');
+        Route::get('/qrcode',       [TokoController::class, 'qrcodeVendor'])         ->name('qrcode');        
+        Route::get('/riwayat',      [TokoController::class, 'riwayatVendor'])        ->name('riwayat');   
     });
 });
 
@@ -145,8 +170,8 @@ Route::middleware(['auth', 'role:vendor'])->prefix('vendor')->name('vendor.')->g
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
 
-    Route::get('/scan-qr',         [AdminController::class, 'scanQr'])      ->name('scan-qr');
-    Route::get('/scan-qr/cari/{id}',[AdminController::class, 'cariPesanan'])->name('scan-qr.cari');
+    Route::get('/scan-qr',          [AdminController::class, 'scanQr'])      ->name('scan-qr');
+    Route::get('/scan-qr/cari/{id}',[AdminController::class, 'cariPesanan']) ->name('scan-qr.cari');
 
     Route::prefix('vendor')->name('vendor.')->group(function () {
         Route::get('/',                  [AdminController::class, 'vendorIndex']) ->name('index');
