@@ -54,10 +54,11 @@
                                placeholder="Klik Ambil GPS..." readonly required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Akurasi GPS</label>
-                        <input type="text" id="akurasi" class="form-control"
+                        <label class="form-label">Akurasi GPS Perangkat</label>
+                        <input type="text" id="akurasiTampil" class="form-control"
                                placeholder="-" readonly>
-                        <small class="text-muted">Makin kecil angkanya, makin akurat.</small>
+                        <input type="hidden" id="accuracy_gps" name="accuracy_gps">
+                        <small class="text-muted">Makin kecil angkanya, makin akurat. Disarankan di bawah 20 meter.</small>
                     </div>
 
                     <div id="statusGps" class="mb-3"></div>
@@ -84,12 +85,13 @@
 
 @section('script-page')
 <script>
-const btnAmbil  = document.getElementById('btnAmbilGps');
-const btnSimpan = document.getElementById('btnSimpan');
-const inputLat  = document.getElementById('latitude');
-const inputLng  = document.getElementById('longitude');
-const inputAkur = document.getElementById('akurasi');
-const statusDiv = document.getElementById('statusGps');
+const btnAmbil      = document.getElementById('btnAmbilGps');
+const btnSimpan     = document.getElementById('btnSimpan');
+const inputLat      = document.getElementById('latitude');
+const inputLng      = document.getElementById('longitude');
+const inputAkurasi  = document.getElementById('accuracy_gps');
+const tampilAkurasi = document.getElementById('akurasiTampil');
+const statusDiv     = document.getElementById('statusGps');
 
 btnAmbil.addEventListener('click', () => {
     if (!navigator.geolocation) {
@@ -102,14 +104,23 @@ btnAmbil.addEventListener('click', () => {
 
     navigator.geolocation.getCurrentPosition(
         (pos) => {
-            inputLat.value  = pos.coords.latitude;
-            inputLng.value  = pos.coords.longitude;
-            inputAkur.value = pos.coords.accuracy.toFixed(1) + ' meter';
+            inputLat.value      = pos.coords.latitude;
+            inputLng.value      = pos.coords.longitude;
+            inputAkurasi.value  = pos.coords.accuracy;
+            tampilAkurasi.value = pos.coords.accuracy.toFixed(1) + ' meter';
 
             btnSimpan.disabled = false;
             btnAmbil.disabled  = false;
 
-            statusDiv.innerHTML = '<div class="alert alert-success"><i class="mdi mdi-check-circle"></i> Koordinat berhasil diambil! Klik Simpan Koordinat untuk menyimpan.</div>';
+            const akurasi = pos.coords.accuracy;
+            const warna   = akurasi <= 20 ? 'success' : akurasi <= 50 ? 'warning' : 'danger';
+            const pesan   = akurasi <= 20
+                ? 'GPS akurat! Koordinat siap disimpan.'
+                : akurasi <= 50
+                    ? 'GPS cukup akurat. Bisa disimpan.'
+                    : 'GPS kurang akurat. Coba di tempat terbuka atau tunggu beberapa saat lagi.';
+
+            statusDiv.innerHTML = `<div class="alert alert-${warna}"><i class="mdi mdi-check-circle"></i> ${pesan}</div>`;
         },
         (err) => {
             btnAmbil.disabled = false;

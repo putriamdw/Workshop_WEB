@@ -91,14 +91,16 @@ class TokoController extends Controller
     public function simpanTitikAwal(Request $request, $id)
     {
         $request->validate([
-            'latitude'  => 'required|numeric',
-            'longitude' => 'required|numeric',
+            'latitude'    => 'required|numeric',
+            'longitude'   => 'required|numeric',
+            'accuracy_gps'=> 'nullable|numeric',
         ]);
 
         $toko = Toko::findOrFail($id);
         $toko->update([
-            'latitude'  => $request->latitude,
-            'longitude' => $request->longitude,
+            'latitude'    => $request->latitude,
+            'longitude'   => $request->longitude,
+            'accuracy_gps'=> $request->accuracy_gps ?? 0,
         ]);
 
         return redirect()->route('toko.index')
@@ -143,9 +145,9 @@ class TokoController extends Controller
     public function simpanTitikAwalVendor(Request $request)
     {
         $request->validate([
-            'latitude'  => 'required|numeric',
-            'longitude' => 'required|numeric',
-            'accuracy'  => 'nullable|numeric',
+            'latitude'    => 'required|numeric',
+            'longitude'   => 'required|numeric',
+            'accuracy_gps'=> 'nullable|numeric',
         ]);
 
         $vendor = auth()->user()->vendor;
@@ -157,8 +159,9 @@ class TokoController extends Controller
         }
 
         $toko->update([
-            'latitude'  => $request->latitude,
-            'longitude' => $request->longitude,
+            'latitude'    => $request->latitude,
+            'longitude'   => $request->longitude,
+            'accuracy_gps'=> $request->accuracy_gps ?? 0,
         ]);
 
         return redirect()->route('vendor.titik-awal')
@@ -209,7 +212,7 @@ class TokoController extends Controller
         return view('toko.kunjungan');
     }
 
-    // ── Customer: Proses catat kunjungan ──────────────────────────────────────
+    // ── Customer: Simpan kunjungan ────────────────────────────────────────────
     public function simpanKunjungan(Request $request)
     {
         $request->validate([
@@ -240,9 +243,14 @@ class TokoController extends Controller
             $request->latitude_kunjungan, $request->longitude_kunjungan
         );
 
-        $accuracyCustomer = $request->accuracy_kunjungan ?? 0;
-        $thresholdEfektif = $toko->accuracy + $accuracyCustomer;
-        $status           = $jarak <= $thresholdEfektif ? 'diterima' : 'ditolak';
+        // Sesuai Lampiran 3:
+        // threshold_efektif = threshold (admin set) + acc GPS toko + acc GPS sales/customer
+        $thresholdAdmin   = $toko->accuracy;
+        $accGpsToko       = $toko->accuracy_gps ?? 0;
+        $accGpsSales      = $request->accuracy_kunjungan ?? 0;
+        $thresholdEfektif = $thresholdAdmin + $accGpsToko + $accGpsSales;
+
+        $status = $jarak <= $thresholdEfektif ? 'diterima' : 'ditolak';
 
         Kunjungan::create([
             'id_toko'             => $toko->id_toko,
@@ -256,11 +264,14 @@ class TokoController extends Controller
         $jarakBulat = round($jarak, 1);
 
         return response()->json([
-            'status'    => $status,
-            'jarak'     => $jarakBulat,
-            'threshold' => $thresholdEfektif,
-            'nama_toko' => $toko->nama_toko,
-            'message'   => $status === 'diterima'
+            'status'          => $status,
+            'jarak'           => $jarakBulat,
+            'threshold'       => $thresholdEfektif,          // total threshold efektif
+            'threshold_admin' => $thresholdAdmin,             // threshold yg ditentukan admin
+            'acc_toko'        => round($accGpsToko, 1),       // akurasi GPS toko saat input titik awal
+            'acc_sales'       => round($accGpsSales, 1),      // akurasi GPS sales/customer saat kunjungan
+            'nama_toko'       => $toko->nama_toko,
+            'message'         => $status === 'diterima'
                 ? "Kunjungan diterima! Kamu berada {$jarakBulat} meter dari {$toko->nama_toko}."
                 : "Kunjungan ditolak. Kamu berada {$jarakBulat} meter dari toko, batas {$thresholdEfektif} meter.",
         ]);

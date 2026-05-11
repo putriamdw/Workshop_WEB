@@ -61,7 +61,7 @@
                         <label class="form-label">Akurasi GPS Perangkat</label>
                         <input type="text" id="akurasiTampil" class="form-control"
                                placeholder="-" readonly>
-                        <input type="hidden" id="accuracy" name="accuracy">
+                        <input type="hidden" id="accuracy_gps" name="accuracy_gps">
                         <small class="text-muted">
                             Makin kecil angkanya, makin akurat. Disarankan di bawah 20 meter.
                         </small>
@@ -97,7 +97,7 @@ const btnAmbil      = document.getElementById('btnAmbilGps');
 const btnSimpan     = document.getElementById('btnSimpan');
 const inputLat      = document.getElementById('latitude');
 const inputLng      = document.getElementById('longitude');
-const inputAkurasi  = document.getElementById('accuracy');
+const inputAkurasi  = document.getElementById('accuracy_gps');
 const tampilAkurasi = document.getElementById('akurasiTampil');
 const statusDiv     = document.getElementById('statusGps');
 
@@ -138,7 +138,6 @@ btnAmbil.addEventListener('click', () => {
     );
 });
 
-// Aktifkan tombol simpan kalau koordinat sudah ada
 @if($toko && $toko->latitude && $toko->longitude)
     btnSimpan.disabled = false;
 @endif
