@@ -15,6 +15,7 @@ use App\Http\Controllers\TokoController;
 use App\Models\Buku;
 use App\Models\Kategori;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AntrianController;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -47,26 +48,21 @@ Route::middleware(['auth'])->group(function () {
         ]);
     })->name('dashboard');
 
-    // Semua user bisa lihat
     Route::get('kategori', [KategoriController::class, 'index'])->name('kategori.index');
     Route::get('buku',     [BukuController::class,     'index'])->name('buku.index');
 
-    // PDF
     Route::get('/generate-sertifikat', [GeneratePdfController::class, 'sertifikat'])->name('pdf.sertifikat');
     Route::get('/generate-undangan',   [GeneratePdfController::class, 'undangan'])  ->name('pdf.undangan');
 
-    // Barang
     Route::post('/barang/cetak',           [GeneratePdfController::class, 'tagHarga'])   ->name('barang.cetak');
     Route::get('/barcode-scanner',         [BarangController::class,      'scanner'])    ->name('barang.scanner');
     Route::get('/barcode/cari/{id_barang}',[BarangController::class,      'cariBarcode'])->name('barang.cari-barcode');
     Route::resource('barang', BarangController::class);
 
-    // JS Tugas
     Route::get('/js-tugas/spinner',    fn() => view('tugas_js.js1_spinner'))     ->name('jstugas.tugas1');
     Route::get('/js-tugas/tabel-crud', fn() => view('tugas_js.js2_3_tabel_crud'))->name('jstugas.tugas2_3');
     Route::get('/js-tugas/select',     fn() => view('tugas_js.js4_select'))      ->name('jstugas.tugas4');
 
-    // Wilayah
     Route::get('/wilayah',                          [WilayahController::class, 'index'])       ->name('wilayah.index');
     Route::get('/wilayah/provinsi',                 [WilayahController::class, 'getProvinsi']) ->name('wilayah.provinsi');
     Route::get('/wilayah/kota/{id_provinsi}',       [WilayahController::class, 'getKota'])     ->name('wilayah.kota');
@@ -74,7 +70,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/wilayah/kelurahan/{id_kecamatan}', [WilayahController::class, 'getKelurahan'])->name('wilayah.kelurahan');
     Route::get('/wilayah-axios',                    [WilayahController::class, 'indexAxios'])  ->name('wilayah.axios');
 
-    // POS
     Route::get('/pos',              [PosController::class, 'index'])     ->name('pos.index');
     Route::post('/pos/cari-barang', [PosController::class, 'cariBarang'])->name('pos.cari');
     Route::post('/pos/bayar',       [PosController::class, 'bayar'])     ->name('pos.bayar');
@@ -104,7 +99,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
         Route::get('/foto/{id}', [CustomerController::class, 'fotoBlob'])  ->name('foto-blob');
     });
 
-    // Toko - admin: CRUD + QR Code + riwayat
     Route::get('/toko',                  [TokoController::class, 'index'])          ->name('toko.index');
     Route::get('/toko/create',           [TokoController::class, 'create'])         ->name('toko.create');
     Route::get('/toko/riwayat',          [TokoController::class, 'riwayat'])        ->name('toko.riwayat');
@@ -113,8 +107,6 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::put('/toko/{id}',             [TokoController::class, 'update'])         ->name('toko.update');
     Route::delete('/toko/{id}',          [TokoController::class, 'destroy'])        ->name('toko.destroy');
     Route::get('/toko/{id}/qrcode',      [TokoController::class, 'qrcode'])         ->name('toko.qrcode');
-
-    // Admin juga bisa input titik awal untuk semua toko
     Route::get('/toko/{id}/titik-awal',  [TokoController::class, 'titikAwal'])      ->name('toko.titik-awal');
     Route::post('/toko/{id}/titik-awal', [TokoController::class, 'simpanTitikAwal'])->name('toko.simpan-titik-awal');
 });
@@ -158,11 +150,10 @@ Route::middleware(['auth', 'role:vendor'])->prefix('vendor')->name('vendor.')->g
             Route::get('/{id}',      [VendorController::class, 'pesananShow']) ->name('show');
         });
 
-        // Vendor: input titik awal kantinnya sendiri
         Route::get('/titik-awal',  [TokoController::class, 'titikAwalVendor'])      ->name('titik-awal');
         Route::post('/titik-awal', [TokoController::class, 'simpanTitikAwalVendor'])->name('simpan-titik-awal');
-        Route::get('/qrcode',       [TokoController::class, 'qrcodeVendor'])         ->name('qrcode');        
-        Route::get('/riwayat',      [TokoController::class, 'riwayatVendor'])        ->name('riwayat');   
+        Route::get('/qrcode',      [TokoController::class, 'qrcodeVendor'])         ->name('qrcode');
+        Route::get('/riwayat',     [TokoController::class, 'riwayatVendor'])        ->name('riwayat');
     });
 });
 
@@ -183,6 +174,27 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('/',     [AdminController::class, 'pesananIndex'])->name('index');
         Route::get('/{id}', [AdminController::class, 'pesananShow']) ->name('show');
     });
+});
+
+// ── ANTRIAN: Guest (tanpa login) ──────────────────────────────────────────────
+Route::get('/guest',            [AntrianController::class, 'guestForm'])  ->name('antrian.guest');
+Route::post('/guest',           [AntrianController::class, 'guestStore']) ->name('antrian.guest.store');
+Route::get('/guest/tiket/{id}', [AntrianController::class, 'tiket'])      ->name('antrian.tiket');
+
+// ── Papan antrian publik (tanpa login) ────────────────────────────────────────
+Route::get('/papan', [AntrianController::class, 'papan'])->name('antrian.papan');
+
+// ── SSE Stream (tanpa login) ──────────────────────────────────────────────────
+Route::get('/sse/antrian', [AntrianController::class, 'stream'])->name('antrian.sse');
+
+// ── Antrian Admin (perlu login + role admin) ──────────────────────────────────
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin',                                [AntrianController::class, 'adminDashboard'])   ->name('antrian.admin');
+    Route::post('/admin/panggil-berikutnya',            [AntrianController::class, 'panggilBerikutnya'])->name('antrian.panggil-berikutnya');
+    Route::post('/admin/antrian/{id}/panggil',          [AntrianController::class, 'panggil'])          ->name('antrian.panggil');
+    Route::post('/admin/antrian/{id}/panggil-detail',   [AntrianController::class, 'panggilDenganDetail'])->name('antrian.panggil-detail');
+    Route::post('/admin/antrian/{id}/selesai',          [AntrianController::class, 'selesai'])          ->name('antrian.selesai');
+    Route::post('/admin/antrian/{id}/terlambat',        [AntrianController::class, 'terlambat'])        ->name('antrian.terlambat');
 });
 
 require __DIR__.'/auth.php';
