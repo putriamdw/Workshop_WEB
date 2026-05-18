@@ -195,7 +195,7 @@ class AntrianController extends Controller
                     Cache::put('antrian_data', $data, now()->addHours(12));
                 }
 
-                // Kirim event SSE — format sesuai modul 1.4
+                // Kirim event SSE
                 echo 'event: queue-update' . PHP_EOL;
                 echo 'data: ' . json_encode($data) . PHP_EOL;
                 echo PHP_EOL; // baris kosong = akhir pesan
